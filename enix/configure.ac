@@ -117,6 +117,13 @@ dnl
 INCLUDES='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/src/enix -I$(top_builddir)/src/enix'
 AC_SUBST(INCLUDES)
 
+dnl ---------------------------------------------
+dnl speex lib/headers
+dnl ---------------------------------------------
+
+AC_CHECK_LIB(speex, speex_encoder_init, HAVE_SPEEX="maybe", AC_MSG_ERROR("speex libraries (plus headers) needed"), [-lm -logg])
+AC_CHECK_HEADER(speex.h, , AC_MSG_ERROR("(required) speex headers not found."))
+
 
 dnl ---------------------------------------------
 dnl CFLAGS
@@ -216,6 +223,7 @@ src/enix/libavcodec/alpha/Makefile
 src/enix/libavcodec/i386/Makefile
 src/cut/Makefile
 src/reen/Makefile
+src/phone/Makefile
 m4/Makefile
 ])
 

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_ffmpeg.c,v 1.1 2003/02/23 22:45:24 guenter Exp $
+ * $Id: vcodec_ffmpeg.c,v 1.2 2003/04/13 18:18:42 guenter Exp $
  *
  * enix ffmpeg video codec wrapper
  */
@@ -49,6 +49,7 @@ typedef struct {
 
   enix_venc_t        encoder;
 
+  int                codec_id;
   AVCodec           *codec;
   AVCodecContext    *c;
   AVFrame           *picture;
@@ -65,9 +66,9 @@ typedef struct {
 
 static void ffmpeg_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   
-  ffmpeg_t            *this = (ffmpeg_t *) this_gen;
+  ffmpeg_t          *this = (ffmpeg_t *) this_gen;
   int                width, height, frame_duration;
-  int                quality, bitrate;
+  int                quality, bitrate, max_bframes;
   enix_options_t    *options;
 
   width          = stream->get_property (stream, ENIX_STREAM_PROP_WIDTH);
@@ -81,18 +82,20 @@ static void ffmpeg_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
 #endif
 
   quality                   = options->get_num_option (options,
-							     "quality");
+						       "quality");
   bitrate                   = options->get_num_option (options,
-							     "bitrate");
+						       "bitrate");
+  max_bframes               = options->get_num_option (options,
+						       "max_bframes");
 
   /*
    * ffmpeg specific stuff starts here
    */
 
-  this->codec = avcodec_find_encoder(CODEC_ID_MPEG4);
+  this->codec = avcodec_find_encoder (this->codec_id);
   if (!this->codec) {
-    printf ("vcodec_ffmpeg: error, codec not found\n");
-    exit(1);
+    printf ("vcodec_ffmpeg: error, codec %d not found\n", this->codec_id);
+    exit (1);
   }
 
   this->c       = avcodec_alloc_context();
@@ -105,6 +108,7 @@ static void ffmpeg_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   this->c->gop_size       = 50;
 
   this->c->flags          = CODEC_FLAG_4MV | CODEC_FLAG_QPEL |  CODEC_FLAG_GMC ;
+  this->c->max_b_frames   = max_bframes;
 
   /* open it */
   if (avcodec_open (this->c, this->codec) < 0) {
@@ -202,7 +206,7 @@ static void *ffmpeg_get_extra_info (enix_venc_t *this_gen, int info) {
   return NULL;
 }
 
-enix_venc_t *create_ffmpeg_enc (void) {
+enix_venc_t *create_ffmpeg_enc (int codec_id) {
 
   ffmpeg_t *this;
 
@@ -225,8 +229,9 @@ enix_venc_t *create_ffmpeg_enc (void) {
   this->encoder.options->new_num_option (this->encoder.options, 
 					 "bitrate", 500000);
 
-  this->codec = NULL;
-  this->c     = NULL;
+  this->codec    = NULL;
+  this->codec_id = codec_id;
+  this->c        = NULL;
 
   this->pass  = 0;
 

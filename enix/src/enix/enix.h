@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: enix.h,v 1.1 2003/02/23 22:45:10 guenter Exp $
+ * $Id: enix.h,v 1.2 2003/04/13 18:18:42 guenter Exp $
  *
  * enix.h: toplevel, basic data structures and utility functions
  */
@@ -192,8 +192,9 @@ struct enix_mux_s {
  */
 
 enix_venc_t *create_xvid_enc (void) ;
-enix_venc_t *create_ffmpeg_enc (void) ;
+enix_venc_t *create_ffmpeg_enc (int codec_id) ;
 enix_aenc_t *create_vorbis_enc (void) ;
+enix_aenc_t *create_speex_enc (void) ;
 enix_mux_t  *create_ogm_mux (void) ;
 
 /*
@@ -207,6 +208,38 @@ xine_video_frame_t *enix_video_frame_new (int w, int h) ;
  */
 
 enix_stream_t *enix_capture_stream_new (void) ;
+
+/*
+ * ffmpeg codec ids
+ */
+
+#define FFMPEG_CODEC_ID_MPEG1VIDEO    1
+#define FFMPEG_CODEC_ID_H263          2
+#define FFMPEG_CODEC_ID_RV10          3
+#define FFMPEG_CODEC_ID_MP2           4
+#define FFMPEG_CODEC_ID_MP3LAME       5
+#define FFMPEG_CODEC_ID_VORBIS        6
+#define FFMPEG_CODEC_ID_AC3           7
+#define FFMPEG_CODEC_ID_MJPEG         8
+#define FFMPEG_CODEC_ID_MJPEGB        9
+#define FFMPEG_CODEC_ID_MPEG4        10
+#define FFMPEG_CODEC_ID_RAWVIDEO     11
+#define FFMPEG_CODEC_ID_MSMPEG4V1    12
+#define FFMPEG_CODEC_ID_MSMPEG4V2    13
+#define FFMPEG_CODEC_ID_MSMPEG4V3    14
+#define FFMPEG_CODEC_ID_WMV1         15
+#define FFMPEG_CODEC_ID_WMV2         16
+#define FFMPEG_CODEC_ID_H263P        17
+#define FFMPEG_CODEC_ID_H263I        18
+#define FFMPEG_CODEC_ID_SVQ1         19
+#define FFMPEG_CODEC_ID_DVVIDEO      20
+#define FFMPEG_CODEC_ID_DVAUDIO      21
+#define FFMPEG_CODEC_ID_WMAV1        22
+#define FFMPEG_CODEC_ID_WMAV2        23
+#define FFMPEG_CODEC_ID_MACE3        24
+#define FFMPEG_CODEC_ID_MACE6        25
+#define FFMPEG_CODEC_ID_HUFFYUV      26
+
 
 #endif
 

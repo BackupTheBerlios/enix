@@ -1,4 +1,4 @@
-SUBDIRS = enix cut reen
+SUBDIRS = enix cut reen phone
 
 debug:
 	@list='$(SUBDIRS)'; for subdir in $$list; do \

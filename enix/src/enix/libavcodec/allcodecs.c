@@ -34,6 +34,7 @@ void avcodec_register_all(void)
 
     /* encoders */
 #ifdef CONFIG_ENCODERS
+    printf ("avcodec: registering encoders\n");
     register_avcodec(&ac3_encoder);
     register_avcodec(&mp2_encoder);
 #ifdef CONFIG_MP3LAME

@@ -78,15 +78,21 @@ void __av_freep(void **ptr)
 }
 
 /* encoder management */
-AVCodec *first_avcodec;
+static AVCodec *first_avcodec=NULL;
 
 void register_avcodec(AVCodec *format)
 {
     AVCodec **p;
     p = &first_avcodec;
-    while (*p != NULL) p = &(*p)->next;
+    while ((*p) != NULL) 
+      p = &(*p)->next;
+
     *p = format;
     format->next = NULL;
+#if 0
+    printf ("registered codec p=%8x id %3d, encode = %8x, first=%8x\n",
+	    *p, (*p)->id, (*p)->encode, first_avcodec);
+#endif
 }
 
 void avcodec_get_chroma_sub_sample(int fmt, int *h_shift, int *v_shift){
@@ -354,10 +360,9 @@ AVCodec *avcodec_find_encoder(enum CodecID id)
     AVCodec *p;
     p = first_avcodec;
     while (p) {
-
-        if (p->encode != NULL && p->id == id)
-            return p;
-        p = p->next;
+      if (p->encode != NULL && p->id == id)
+	return p;
+      p = p->next;
     }
     return NULL;
 }

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: acodec_vorbis.c,v 1.2 2003/03/12 16:16:04 guenter Exp $
+ * $Id: acodec_vorbis.c,v 1.3 2003/04/13 18:18:42 guenter Exp $
  *
  * enix vorbis audio codec wrapper
  */
@@ -39,8 +39,6 @@
 #include <vorbis/vorbisenc.h>
 
 #include "enix.h"
-
-#define HINT_FILE "/tmp/hints.enix.vorbis"
 
 typedef struct {
 

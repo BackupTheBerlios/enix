@@ -6,12 +6,12 @@ noinst_LTLIBRARIES = libenix.la
 
 libenix_la_SOURCES = scaler.c frame.c xine_stream.c options.c \
 	 	     vcodec_xvid.c acodec_vorbis.c mux_ogm.c zoom.c \
-		     vcodec_ffmpeg.c
+		     vcodec_ffmpeg.c acodec_speex.c
 
 libenix_la_LDFLAGS = $(THREAD_LIBS) -avoid-version -module
 
 libenix_la_LIBADD   = @XINE_LIBS@ $(VORBIS_LIBS) $(VORBISENC_LIBS) \
-	  	      $(OGG_LIBS) -lxvidcore \
+	  	      $(OGG_LIBS) -lxvidcore -lspeex \
 		      $(top_builddir)/src/enix/libavcodec/libavcodec.la
 
 
