@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: xine_stream.c,v 1.2 2003/07/13 15:29:00 guenter Exp $
+ * $Id: xine_stream.c,v 1.3 2004/07/29 20:05:30 dooh Exp $
  *
  * wrapper around xine engine streams providing the enix_stream_t interface
  */
@@ -382,7 +382,10 @@ enix_stream_t *enix_xine_stream_new (char *mrl, int want_audio, int want_video) 
   this->audio_vpts  = 0;
   this->vpts_offset = 0;
 
-  xine_open (this->stream, mrl); 
+  if (!xine_open (this->stream, mrl)) {
+    printf ("Unable to open '%s'\n",mrl);
+    abort();
+  } 
 
   this->enix_stream.play                 = enix_xine_play;
   this->enix_stream.get_next_video_frame = enix_xine_get_next_video_frame;
@@ -396,5 +399,4 @@ enix_stream_t *enix_xine_stream_new (char *mrl, int want_audio, int want_video) 
 
   return (enix_stream_t *) this;
 }
-
 
