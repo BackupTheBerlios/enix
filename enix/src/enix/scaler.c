@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: scaler.c,v 1.3 2004/07/28 12:47:47 dooh Exp $
+ * $Id: scaler.c,v 1.4 2004/07/30 14:00:10 dooh Exp $
  *
  * a very simple scaler, to be improved in the future
  * (quality and speed)
@@ -36,17 +36,12 @@ typedef struct {
   enix_stream_t        stream;
 
   /* parameters set by user */
-  int                  desired_width;
-
+  int                  clp_top, clp_btm;
+  int                  clp_lft, clp_rgt;
   enix_stream_t       *src_stream;
 
-  int                  src_width, src_height;
-  double               src_aspect;
   int                  dst_width, dst_height;
-  int                  aspect;
-
-  int                  src_span;
-  int                  dst_span;
+  int                  dst_aspect;
 
   xine_video_frame_t   src_frame;
 
@@ -98,14 +93,14 @@ static int scaler_get_next_video_frame (enix_stream_t *stream_gen,
   src_y_size  = scaler->src_frame.width * scaler->src_frame.height;
   src_uv_size = src_y_size / 4;
 
-  scaler->zoom_image_src_y.data = scaler->src_frame.data;
+  scaler->zoom_image_src_y.data = scaler->src_frame.data + (scaler->zoom_image_src_y.span*scaler->clp_top) + (scaler->clp_lft);
   zoom_image_process (scaler->zoomer_y);
 
-  scaler->zoom_image_src_uv.data = scaler->src_frame.data + src_y_size;
+  scaler->zoom_image_src_uv.data = scaler->src_frame.data + src_y_size + (((scaler->zoom_image_src_y.span*scaler->clp_top)/2 + (scaler->clp_lft))/2);
   scaler->zoom_image_dst_uv.data = scaler->u_data;
   zoom_image_process (scaler->zoomer_uv);
 
-  scaler->zoom_image_src_uv.data = scaler->src_frame.data + src_y_size + src_uv_size;
+  scaler->zoom_image_src_uv.data = scaler->src_frame.data + src_y_size + src_uv_size + (((scaler->zoom_image_src_y.span*scaler->clp_top)/2 + (scaler->clp_lft))/2);
   scaler->zoom_image_dst_uv.data = scaler->v_data;
   zoom_image_process (scaler->zoomer_uv);
 
@@ -141,7 +136,7 @@ static int scaler_get_property (enix_stream_t *stream_gen, int property) {
   case ENIX_STREAM_PROP_HEIGHT:
     return scaler->dst_height;
   case ENIX_STREAM_PROP_ASPECT:
-    return scaler->aspect;
+    return scaler->dst_aspect;
   default:
     if (scaler->src_stream) 
       return scaler->src_stream->get_property (scaler->src_stream, property);
@@ -150,73 +145,53 @@ static int scaler_get_property (enix_stream_t *stream_gen, int property) {
   return 0;
 }
 
-int scaler_calc_y(enix_stream_t *src, int dst_w, int mode, int mod_y) {
-  int ratio= src->get_property (src, ENIX_STREAM_PROP_ASPECT);
-  int src_w= src->get_property (src, ENIX_STREAM_PROP_WIDTH);
-  int src_h= src->get_property (src, ENIX_STREAM_PROP_HEIGHT);
-  double src_aspect;
-
-  if (ratio)
-    src_aspect  = (double) ratio / 10000.0;
-  else /* don't touch */
-    src_aspect  = (double) src_w / src_h;
-
-  switch (mode) {
-  case ENIX_SCALER_MODE_AR_SQUARE:
-    return ( mod_y * (int) (.5+((float)dst_w / (float) src_aspect / (float)mod_y)));
-  case ENIX_SCALER_MODE_AR_KEEP:
-    return ( mod_y * (int) (.5+((float)src_h * (float)dst_w / (float) src_w /(float)mod_y)));
-  default:
-    printf ("scaler: scaler_calc_y was called with an unknown mode '%d'.\n",mode);
-    abort();
-  }
-}
-
-enix_stream_t *enix_scaler_new (enix_stream_t *src, int dst_w, int mode ,int mod_y) {
+enix_stream_t *enix_scaler_new (enix_stream_t *src, int dst_w, int mode ,int mod_y,
+				int clp_top, int clp_btm, int clp_lft, int clp_rgt) {
 
   scaler_t *scaler;
-  int ratio;
+  int src_ratio=src->get_property (src, ENIX_STREAM_PROP_ASPECT);
+  int clp_w, clp_h , src_w , src_h , dst_h;
+  double src_aspect,clp_aspect;
 
   scaler = malloc (sizeof (scaler_t));
 
-  scaler->desired_width = dst_w;
-
-  scaler->src_width   = src->get_property (src, ENIX_STREAM_PROP_WIDTH);
-  scaler->src_height  = src->get_property (src, ENIX_STREAM_PROP_HEIGHT);
-
-  ratio = src->get_property (src, ENIX_STREAM_PROP_ASPECT);
-  if (ratio)
-    scaler->src_aspect  = (double) ratio / 10000.0;
-  else /* don't touch */
-    scaler->src_aspect  = scaler->src_width / scaler->src_height;
-
-  scaler->dst_width   = 0;
-  scaler->dst_height  = 0;
+  scaler->clp_top       = clp_top;
+  scaler->clp_btm       = clp_btm;
+  scaler->clp_rgt       = clp_rgt;
+  scaler->clp_lft       = clp_lft;
 
   scaler->src_stream  = src;
 
-  scaler->dst_width  = scaler->desired_width;
-  scaler->dst_height  = scaler_calc_y(src, dst_w, mode, mod_y);
+  src_w = src->get_property (src, ENIX_STREAM_PROP_WIDTH);
+  src_h = src->get_property (src, ENIX_STREAM_PROP_HEIGHT);
+  if (src_ratio) {
+    src_aspect = (double) src_ratio / 10000.0;
+  } else src_aspect = src_w / src_h;
+  printf ("scaler: src     is '%d'x'%d' with aspect %f\n",src_w, src_h, src_aspect);
 
+  /*clipping*/
+  clp_w = src_w - clp_lft - clp_rgt;
+  clp_h = src_h - clp_top - clp_btm;
+  clp_aspect = src_aspect * clp_w * src_h / clp_h / src_w;
+  printf ("scaler: clipped is '%d'x'%d' with aspect %f\n",clp_w, clp_h, clp_aspect);
+
+  /*zooming*/
   switch (mode) {
   case ENIX_SCALER_MODE_AR_SQUARE:
-    scaler->aspect = 10000 * scaler->dst_width / scaler->dst_height;
+    dst_h = dst_w / clp_aspect ;
     break;
   case ENIX_SCALER_MODE_AR_KEEP:
-    if (ratio)
-      scaler->aspect = ratio;
-    else
-      scaler->aspect = 10000 * scaler->dst_width / scaler->dst_height;
+    dst_h = clp_h * dst_w / clp_w;
     break;
   default:
-    printf ("scaler: enix_scaler_new was called with an unknown mode '%d'.\n",mode);
+    printf ("scaler: scaler_calc_y was called with an unknown AR_MODE '%d'.\n",mode);
     abort();
   }
-
-  printf ("scaler:will scale from %dx%d -> %dx%d (src_aspect=%f)\n",
-	  scaler->src_width, scaler->src_height, 
-	  scaler->dst_width, scaler->dst_height,
-	  scaler->src_aspect);
+  /*readjust y so that y mod mod_y == 0*/
+  scaler->dst_aspect = 10000 * clp_aspect;
+  scaler->dst_width  = dst_w;
+  scaler->dst_height = mod_y * (int) ( 0.5 + ( dst_h / mod_y ));
+  printf ("scaler: zoomed  is '%d'x'%d' with aspect %f\n", scaler->dst_width, scaler->dst_height, scaler->dst_aspect / 10000 );
 
   /* setup images */
 
@@ -227,13 +202,17 @@ enix_stream_t *enix_scaler_new (enix_stream_t *src, int dst_w, int mode ,int mod
   scaler->v_data   = scaler->y_data + scaler->y_size + scaler->uv_size;
 
   zoom_setup_image (&scaler->zoom_image_src_y, 
-		    scaler->src_width, scaler->src_height, 
+		    src_w-clp_lft-clp_rgt, src_h-clp_top-clp_btm, 
 		    1, NULL);
+  scaler->zoom_image_src_y.span=src_w;
+
   zoom_setup_image (&scaler->zoom_image_src_uv, 
-		    scaler->src_width/2, scaler->src_height/2, 
+		    (src_w-clp_lft-clp_rgt)/2, (src_h-clp_top-clp_btm)/2, 
 		    1, NULL);
+  scaler->zoom_image_src_uv.span=src_w/2;
+
   zoom_setup_image (&scaler->zoom_image_dst_y, 
-		    scaler->dst_width, scaler->dst_height, 
+		    scaler->dst_width, scaler->dst_height,
 		    1, scaler->y_data);
   zoom_setup_image (&scaler->zoom_image_dst_uv, 
 		    scaler->dst_width/2, scaler->dst_height/2, 

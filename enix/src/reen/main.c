@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: main.c,v 1.9 2004/07/29 22:05:33 dooh Exp $
+ * $Id: main.c,v 1.10 2004/07/30 14:00:10 dooh Exp $
  *
  * re-encoder main
  */
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
   stream = enix_xine_stream_new (infile, 1, 1);
   if (width) {
     xine_stream=stream;
-    stream = enix_scaler_new (xine_stream, width, mode, 16);
+    stream = enix_scaler_new (xine_stream, width, mode, 16, 0, 0, 0 ,0);
   }
     
   /*

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: gtk_enix_preview.c,v 1.2 2004/07/28 12:47:47 dooh Exp $
+ * $Id: gtk_enix_preview.c,v 1.3 2004/07/30 14:00:10 dooh Exp $
  *
  * gtk enix video preview widget
  */
@@ -270,7 +270,7 @@ GtkWidget *gtk_enix_preview_get_widget (gtk_enix_preview_t *this) {
 void gtk_enix_preview_set_stream (gtk_enix_preview_t *this,
 				  enix_stream_t *stream) {
 
-  this->stream = enix_scaler_new (stream, DEFAULT_WIDTH, ENIX_SCALER_MODE_AR_SQUARE, 1);
+  this->stream = enix_scaler_new (stream, DEFAULT_WIDTH, ENIX_SCALER_MODE_AR_SQUARE, 1, 0, 0, 0, 0);
 
   stream->play (stream, 0, 0);
 
