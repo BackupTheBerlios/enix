@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: mux_ogm.c,v 1.7 2004/07/29 23:20:45 dooh Exp $
+ * $Id: mux_ogm.c,v 1.8 2004/08/01 21:48:01 dooh Exp $
  *
  * enix ogm multiplexer
  */
@@ -297,14 +297,13 @@ static void ogm_encode_video_frame (ogm_t *this, xine_video_frame_t *frame,
       op.granulepos  = this->frame_num++;
       op.packetno    = this->video_cnt++;
     }
-
-    this->video_bytes=this->video_bytes+op.bytes;
       
 #ifdef LOG
     printf ("mux_ogm: video granulepos %lld\n", op.granulepos);
 #endif    
 
     /* weld the packet into the bitstream */
+    this->video_bytes=this->video_bytes+op.bytes;
     ogg_stream_packetin (&this->os_video, &op);
 
     /* write out pages (if any) */
@@ -338,6 +337,7 @@ static void ogm_write_audio_bitstream (ogm_t *this) {
 #endif      
 
     /* weld the packet into the bitstream */
+    this->audio_bytes = this->audio_bytes + op.bytes;
     ogg_stream_packetin (&this->os_audio, &op);
       
     /* write out pages (if any) */
@@ -361,7 +361,7 @@ static void ogm_encode_audio_frame (ogm_t *this, xine_audio_frame_t *frame) {
 
 #define TERM_WIDTH 50
 
-static void show_progress (int pos, int length, int64_t vbytes) {
+static void show_progress (int pos, int length, int64_t vbytes, int64_t abytes) {
   int stars, i;
 
   stars = pos * TERM_WIDTH / length;
@@ -376,9 +376,9 @@ static void show_progress (int pos, int length, int64_t vbytes) {
 
   i = 1024 * pos;
   if (i)
-    printf ("] %3d%% (%d / %d) V-Bitrate %d", pos*100/length, pos, length,(int) (vbytes*8000 / (1024*pos)));
+    printf ("] %3d%% (%d / %d) V-Bitrate %d A-Bitrate %d  ", pos*100/length, pos, length, (int) (vbytes*8000 / (1024*pos)), (int) (abytes*8000 / (1024*pos)) );
   else
-    printf ("] %3d%% (%d / %d) V-Bitrate 0", pos*100/length, pos, length);
+    printf ("] %3d%% (%d / %d) V-Bitrate 0  ", pos*100/length, pos, length);
 
   fflush (stdout);
 }
@@ -414,7 +414,7 @@ static void ogm_run (enix_mux_t *this_gen) {
     video_pts = 0;
     cnt       = 0;
 
-    show_progress (0, length,0);
+    show_progress (0, length,0,0);
     
     while (1) {
       
@@ -434,7 +434,7 @@ static void ogm_run (enix_mux_t *this_gen) {
 	
 	if (frame.pos_time) {
 	  if (cnt>10) {
-	    show_progress (frame.pos_time, length, this->video_bytes);
+	    show_progress (frame.pos_time, length, this->video_bytes, this->audio_bytes);
 	    cnt = 0;
 	  }
 	
@@ -462,7 +462,7 @@ static void ogm_run (enix_mux_t *this_gen) {
 #endif
 	if (frame.pos_time) {
 	  if (cnt>10) {
-	    show_progress (frame.pos_time, length, this->video_bytes);
+	    show_progress (frame.pos_time, length, this->video_bytes, this->audio_bytes);
 	    cnt = 0;
 	  }
 	

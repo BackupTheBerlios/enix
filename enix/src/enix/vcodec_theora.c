@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_theora.c,v 1.7 2004/07/29 22:05:29 dooh Exp $
+ * $Id: vcodec_theora.c,v 1.8 2004/08/01 21:48:01 dooh Exp $
  *
  * enix theora video codec wrapper
  */
@@ -86,17 +86,17 @@ static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   height         = stream->get_property (stream, ENIX_STREAM_PROP_HEIGHT);
   frame_duration = stream->get_property (stream, ENIX_STREAM_PROP_FRAME_DURATION);
   aspect         = stream->get_property (stream, ENIX_STREAM_PROP_ASPECT);
+
   options        = this->encoder.options;
 
-  printf ("vcodec_theora: width=%02d, height=%02d, bitrate=%d\n", 
-	  width, height, bitrate);
 
   quality                   = options->get_num_option (options,
 						       "quality");
   bitrate                   = options->get_num_option (options,
 						       "bitrate");
-  max_bframes               = options->get_num_option (options,
-						       "max_bframes");
+
+  printf ("vcodec_theora: width=%02d, height=%02d, bitrate=%d\n", 
+	  width, height, bitrate);
 
   this->y_size  = width * height;
   this->uv_size = width * height /4;
