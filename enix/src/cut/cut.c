@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: cut.c,v 1.1 2003/02/23 22:56:15 guenter Exp $
+ * $Id: cut.c,v 1.2 2003/07/13 15:29:00 guenter Exp $
  *
  * nonlinear video editor - enix style test application
  */
@@ -35,6 +35,8 @@
 #include "gtk_enix_film.h"
 #include "scaler.h"
 #include "xine_stream.h"
+
+int verbosity = 0;
 
 #define DST_WIDTH  600
 #define CLIP         0

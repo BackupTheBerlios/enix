@@ -393,6 +393,9 @@ zoom_image_init(zoom_image_t *dst, zoom_image_t *src, double (*filterf)(double),
 
     /* Build y weights */
     /* pre-calculate filter contributions for a column */
+
+    printf ("allocating %d contribY items\n", dst->ysize);
+
     contribY = (CLIST *)calloc(dst->ysize, sizeof(CLIST));
     if(contribY == NULL)
     {
@@ -409,6 +412,8 @@ zoom_image_init(zoom_image_t *dst, zoom_image_t *src, double (*filterf)(double),
         fscale = 1.0 / yscale;
         for(i = 0; i < dst->ysize; ++i)
         {
+	  /*printf ("zoom: i=%d \n", i); */
+
             contribY[i].n = 0;
             contribY[i].p = (CONTRIB *)calloc((int) (width * 2 + 1), sizeof(CONTRIB));
             if(contribY[i].p == NULL)
@@ -473,6 +478,8 @@ zoom_image_init(zoom_image_t *dst, zoom_image_t *src, double (*filterf)(double),
     maxwidth = fwidth;
     if (xscale < 1.0 || yscale < 1.0)
        maxwidth = fwidth / (xscale < yscale ? xscale : yscale);
+
+    printf ("zoom: fwidth = %d, maxwidth=%d, xscale=%f, yscale=%f\n", fwidth, maxwidth);
 
     prg = zoomer->programX = calloc(zoomer->dst->xsize * 
                                     (2 + 2*(int)(maxwidth*2+1)),

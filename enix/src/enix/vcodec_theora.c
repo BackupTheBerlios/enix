@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_theora.c,v 1.2 2003/04/27 16:31:19 guenter Exp $
+ * $Id: vcodec_theora.c,v 1.3 2003/07/13 15:29:00 guenter Exp $
  *
  * enix theora video codec wrapper
  */
@@ -147,12 +147,17 @@ static void theora_encode_frame (enix_venc_t *this_gen, xine_video_frame_t *fram
         
   ret = theora_encode_YUVin (&this->td, &yuv);
 
+#ifdef LOG
   printf ("encoded frame %d x %d, ret=%d\n", frame->width, frame->height, ret);
+#endif 
 
   this->got_bits = 0;
   theora_encode_packetout (&this->td, 0, &this->op);
 
-  printf ("vcodec_theora: granulepos %08x\n", this->op.granulepos);
+#ifdef LOG
+  printf ("vcodec_theora: granulepos %08x %d bytes\n", this->op.granulepos,
+	  this->op.bytes);
+#endif
 
 #if 0 /* FIXME */
 #ifdef LOG

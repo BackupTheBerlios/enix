@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: main.c,v 1.3 2003/04/18 00:52:55 guenter Exp $
+ * $Id: main.c,v 1.4 2003/07/13 15:29:00 guenter Exp $
  *
  * re-encoder main
  */
@@ -31,6 +31,8 @@
 #include "xine_stream.h"
 #include "scaler.h"
 
+int verbosity; /* global var used by enix */
+
 #define DST_WIDTH  320
 #define CLIP         0
 
@@ -43,6 +45,7 @@ void print_usage (void) {
   printf ("  -2     enable 2-pass encoding\n");
   printf ("  -b #   set number of b-frames\n");
   printf ("  -w #   set dest video width\n\n");
+  printf ("  -v     increase verbosity\n\n");
 }
 
 int main(int argc, char* argv[]) {
@@ -71,12 +74,13 @@ int main(int argc, char* argv[]) {
   twopass       = 0;
   bframes       = -1;
   width         = 320;
+  verbosity     = 0;
 
   /*
    * parse command line
    */
 
-  while ((opt = getopt(argc, argv, "hA:V:2b:w:")) > 0) {
+  while ((opt = getopt(argc, argv, "hA:V:2b:w:v")) > 0) {
     switch (opt) {
     case 'h':
       print_usage ();
@@ -97,6 +101,9 @@ int main(int argc, char* argv[]) {
     case 'w':
       width = atoi (optarg);
       break;  
+    case 'v':
+      verbosity++;
+      break;
     default:
       print_usage ();
       exit (1);

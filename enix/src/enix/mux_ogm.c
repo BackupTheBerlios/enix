@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: mux_ogm.c,v 1.4 2003/04/27 16:31:19 guenter Exp $
+ * $Id: mux_ogm.c,v 1.5 2003/07/13 15:29:00 guenter Exp $
  *
  * enix ogm multiplexer
  */
@@ -285,7 +285,7 @@ static void ogm_encode_video_frame (ogm_t *this, xine_video_frame_t *frame,
 
       
 #ifdef LOG
-    printf ("mux_ogm: video granulepos %d\n", op.granulepos);
+    printf ("mux_ogm: video granulepos %lld\n", op.granulepos);
 #endif    
 
     /* weld the packet into the bitstream */
@@ -411,12 +411,14 @@ static void ogm_run (enix_mux_t *this_gen) {
 	
 	audio_pts = frame.vpts;
 	
-	if (cnt>10) {
-	  show_progress (frame.pos_time, length);
-	  cnt = 0;
-	}
+	if (frame.pos_time) {
+	  if (cnt>10) {
+	    show_progress (frame.pos_time, length);
+	    cnt = 0;
+	  }
 	
-	cnt ++;
+	  cnt ++;
+	}
 	
 #ifdef LOG
 	printf ("mux_ogm got audio frame pts %lld\n", frame.vpts);
@@ -437,6 +439,15 @@ static void ogm_run (enix_mux_t *this_gen) {
 	printf ("mux_ogm got video frame %dx%d, pts %lld\n", 
 		frame.width, frame.height, frame.vpts);
 #endif
+	if (frame.pos_time) {
+	  if (cnt>10) {
+	    show_progress (frame.pos_time, length);
+	    cnt = 0;
+	  }
+	
+	  cnt ++;
+	}
+
 	if ( (passes==1) || (pass==1) )
 	  ogm_encode_video_frame (this, &frame, 0);
 	else

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: xine_stream.c,v 1.1 2003/02/23 22:45:12 guenter Exp $
+ * $Id: xine_stream.c,v 1.2 2003/07/13 15:29:00 guenter Exp $
  *
  * wrapper around xine engine streams providing the enix_stream_t interface
  */
@@ -33,6 +33,8 @@
 */
 
 #define DEFAULT_ZERO_SIZE 32768
+
+extern int verbosity;
 
 static xine_t *xine = NULL;
 
@@ -357,6 +359,8 @@ enix_stream_t *enix_xine_stream_new (char *mrl, int want_audio, int want_video) 
     xine_config_load (xine, configfile);
     
     xine_init (xine);
+
+    xine_engine_set_param (xine, XINE_ENGINE_PARAM_VERBOSITY, verbosity);
   }
 
   if (want_audio) 

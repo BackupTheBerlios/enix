@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: scaler.c,v 1.1 2003/02/23 22:45:11 guenter Exp $
+ * $Id: scaler.c,v 1.2 2003/07/13 15:29:00 guenter Exp $
  *
  * a very simple scaler, to be improved in the future
  * (quality and speed)
@@ -89,9 +89,10 @@ static void scaler_calc (scaler_t *scaler) {
   src_height  -= 2*src_yoff;
 #endif
     
-  printf ("scaler:will scale from %dx%d -> %dx%d\n",
+  printf ("scaler:will scale from %dx%d -> %dx%d (src_aspect=%f)\n",
 	  scaler->src_width, scaler->src_height, 
-	  scaler->dst_width, scaler->dst_height);
+	  scaler->dst_width, scaler->dst_height,
+	  scaler->src_aspect);
     
 }
 
@@ -184,7 +185,15 @@ enix_stream_t *enix_scaler_new (enix_stream_t *src, int dst_w, int clip) {
 
   scaler->src_width   = src->get_property (src, ENIX_STREAM_PROP_WIDTH);
   scaler->src_height  = src->get_property (src, ENIX_STREAM_PROP_HEIGHT);
-  scaler->src_aspect  = (double) src->get_property (src, ENIX_STREAM_PROP_ASPECT) / 10000.0;
+  {
+    int ratio;
+    ratio = src->get_property (src, ENIX_STREAM_PROP_ASPECT);
+    if (ratio)
+      scaler->src_aspect  = (double) ratio / 10000.0;
+    else /* don't touch */
+      scaler->src_aspect  = scaler->src_width / scaler->src_height;
+  }
+
   scaler->dst_width   = 0;
   scaler->dst_height  = 0;
 
