@@ -13,7 +13,7 @@
  ********************************************************************
 
  function: #ifdef jail to whip a few platforms into the UNIX ideal.
- last mod: $Id: os.h,v 1.1 2003/04/27 16:38:29 guenter Exp $
+ last mod: $Id: os.h,v 1.2 2004/08/01 23:47:45 dooh Exp $
 
  ********************************************************************/
 
@@ -29,8 +29,12 @@
 #    define STIN static __inline__
 #  elif _WIN32
 #    define STIN static __inline
-#else
-#  define STIN static
+#  else
+#    define STIN static
+#  endif
+
+#ifdef DJGPP
+#  define rint(x)   (floor((x)+0.5f))
 #endif
 
 #ifndef M_PI

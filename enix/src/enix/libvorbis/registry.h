@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: registry for time, floor, res backends and channel mappings
- last mod: $Id: registry.h,v 1.1 2003/04/27 16:38:30 guenter Exp $
+ last mod: $Id: registry.h,v 1.2 2004/08/01 23:47:46 dooh Exp $
 
  ********************************************************************/
 

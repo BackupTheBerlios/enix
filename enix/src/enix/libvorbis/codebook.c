@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: basic codebook pack/unpack/code/decode operations
- last mod: $Id: codebook.c,v 1.1 2003/04/27 16:38:29 guenter Exp $
+ last mod: $Id: codebook.c,v 1.2 2004/08/01 23:47:44 dooh Exp $
 
  ********************************************************************/
 
