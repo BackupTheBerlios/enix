@@ -124,7 +124,7 @@ enable_arm="no"
 enable_mmx="no"
 enable_ppc="no"
 enable_alpha="no"
-enable_sparc="yes"
+enable_sparc="no"
 
 host_or_hostalias="$host"
 if test "$host_or_hostalias" = ""; then
@@ -152,6 +152,7 @@ case "$host_or_hostalias" in
 
   ppc-*-linux* | powerpc-*) 
     CFLAGS="$CFLAGS -fomit-frame-pointer"
+    DEBUG_CFLAGS="$X_CFLAGS $DEBUG_CFLAGS"
     dnl avoid ppc compilation crash
     AS="$CC"
     AC_DEFINE_UNQUOTED(ARCH_PPC,,[Define this if you're running PowerPC architecture])
