@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_theora.c,v 1.5 2004/07/28 12:47:47 dooh Exp $
+ * $Id: vcodec_theora.c,v 1.6 2004/07/29 20:12:19 dooh Exp $
  *
  * enix theora video codec wrapper
  */
@@ -109,21 +109,19 @@ static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
 
   this->ti.width              = width;
   this->ti.height             = height;
-  this->ti.frame_width              = width;
-  this->ti.frame_height             = height;
-  this->ti.offset_x=0;
-  this->ti.offset_y=0;
+  this->ti.frame_width        = width;
+  this->ti.frame_height       = height;
+  this->ti.offset_x           = 0;
+  this->ti.offset_y           = 0;
   this->ti.fps_numerator      = 90000;
   this->ti.fps_denominator    = frame_duration;
-  printf (" ´%d´ * ´%d´ = ´%d´\n",aspect,height,aspect*height);
   temp=gcd(aspect * height,10000 * width);
   this->ti.aspect_numerator   = aspect * height / temp;
   this->ti.aspect_denominator = 10000 * width / temp;
-  this->ti.colorspace            = OC_CS_UNSPECIFIED;
+  this->ti.colorspace         = OC_CS_UNSPECIFIED;
   this->ti.target_bitrate     = bitrate;
   this->ti.target_bitrate     = -1;
   this->ti.quality            = quality;
-  this->ti.quality            = 16;
   
   this->ti.dropframes_p                 = 0;
   this->ti.quick_p                      = 1;
@@ -135,6 +133,7 @@ static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   this->ti.keyframe_auto_threshold      = 80;
   this->ti.keyframe_mindistance         = 8;
   this->ti.noise_sensitivity            = 1;
+  this->ti.sharpness                    = 0;
 
   theora_encode_init (&this->td, &this->ti);
 
