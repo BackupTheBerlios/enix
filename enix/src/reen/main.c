@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: main.c,v 1.8 2004/07/29 20:09:01 dooh Exp $
+ * $Id: main.c,v 1.9 2004/07/29 22:05:33 dooh Exp $
  *
  * re-encoder main
  */
@@ -97,6 +97,7 @@ int main(int argc, char* argv[]) {
       break;
     case 'V':
       bitrate_video = atoi (optarg);
+      quality_video=0;
       break;  
     case 'A':
       bitrate_audio = atoi (optarg);
@@ -109,6 +110,7 @@ int main(int argc, char* argv[]) {
       break;
     case 'q':
       quality_video = atoi (optarg);
+      bitrate_video=0;
       break;
     case 'v':
       verbosity++;

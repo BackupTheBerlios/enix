@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_theora.c,v 1.6 2004/07/29 20:12:19 dooh Exp $
+ * $Id: vcodec_theora.c,v 1.7 2004/07/29 22:05:29 dooh Exp $
  *
  * enix theora video codec wrapper
  */
@@ -120,7 +120,6 @@ static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   this->ti.aspect_denominator = 10000 * width / temp;
   this->ti.colorspace         = OC_CS_UNSPECIFIED;
   this->ti.target_bitrate     = bitrate;
-  this->ti.target_bitrate     = -1;
   this->ti.quality            = quality;
   
   this->ti.dropframes_p                 = 0;
@@ -129,7 +128,6 @@ static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   this->ti.keyframe_frequency           = 64;
   this->ti.keyframe_frequency_force     = 64;
   this->ti.keyframe_data_target_bitrate = bitrate*1.5;
-  /*this->ti.keyframe_data_target_bitrate = -1;*/
   this->ti.keyframe_auto_threshold      = 80;
   this->ti.keyframe_mindistance         = 8;
   this->ti.noise_sensitivity            = 1;
