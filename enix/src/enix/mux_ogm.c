@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: mux_ogm.c,v 1.2 2003/03/12 16:16:04 guenter Exp $
+ * $Id: mux_ogm.c,v 1.3 2003/04/18 00:52:55 guenter Exp $
  *
  * enix ogm multiplexer
  */
@@ -150,54 +150,67 @@ static void ogm_init (enix_mux_t *this_gen, char *filename,
 
   video_encoder->init (video_encoder, stream);
 
-  fourcc = video_encoder->get_extra_info (video_encoder, ENIX_INFO_FOURCC);
-  frame_duration = stream->get_property (stream, ENIX_STREAM_PROP_FRAME_DURATION);
-  width  = stream->get_property (stream, ENIX_STREAM_PROP_WIDTH);
-  height = stream->get_property (stream, ENIX_STREAM_PROP_HEIGHT);
+  if (video_encoder->get_headers) {
 
-  printf ("mux:mux_ogm frame_duration = %d\n", frame_duration);
+    ogg_packet *op;
 
-  dsoggh.streamtype[0]    = 'v';
-  dsoggh.streamtype[1]    = 'i';
-  dsoggh.streamtype[2]    = 'd';
-  dsoggh.streamtype[3]    = 'e';
-  dsoggh.streamtype[4]    = 'o';
-  dsoggh.streamtype[5]    = ' ';
-  dsoggh.streamtype[6]    = ' ';
-  dsoggh.streamtype[7]    = ' ';
-  dsoggh.subtype[0]       = fourcc[0];
-  dsoggh.subtype[1]       = fourcc[1];
-  dsoggh.subtype[2]       = fourcc[2];
-  dsoggh.subtype[3]       = fourcc[3];
-  dsoggh.size             = sizeof (dsogg_header_t);
-  dsoggh.time_unit        = frame_duration * 1000 / 9;
-  dsoggh.samples_per_unit = 1;
-  dsoggh.default_len      = 0; /* ? */
-  dsoggh.buffersize       = 2048000;
-  dsoggh.bits_per_sample  = 0;
-  dsoggh.hubba.video.width      = width;
-  dsoggh.hubba.video.height     = height;
+    while (video_encoder->get_headers (video_encoder, &op)) {
 
-  *this->data = 0x01;
-  memcpy (this->data+1, &dsoggh, sizeof (dsogg_header_t));
+      ogg_stream_packetin (&this->os_video, op);
 
-  oph.packet     = this->data;
-  oph.bytes      = sizeof (dsogg_header_t) + 1;
-  oph.b_o_s      = 1;
-  oph.e_o_s      = 0;
-  oph.granulepos = 0;
-  oph.packetno   = this->video_cnt++;
+    }
 
-  ogg_stream_packetin (&this->os_video, &oph);
+  } else {
 
-  opc.packet     = "\003enix generated";
-  opc.bytes      = 15;
-  opc.b_o_s      = 0;
-  opc.e_o_s      = 0;
-  opc.granulepos = 0;
-  opc.packetno   = this->video_cnt++;
+    fourcc = video_encoder->get_extra_info (video_encoder, ENIX_INFO_FOURCC);
+    frame_duration = stream->get_property (stream, ENIX_STREAM_PROP_FRAME_DURATION);
+    width  = stream->get_property (stream, ENIX_STREAM_PROP_WIDTH);
+    height = stream->get_property (stream, ENIX_STREAM_PROP_HEIGHT);
+    
+    printf ("mux:mux_ogm frame_duration = %d\n", frame_duration);
+    
+    dsoggh.streamtype[0]    = 'v';
+    dsoggh.streamtype[1]    = 'i';
+    dsoggh.streamtype[2]    = 'd';
+    dsoggh.streamtype[3]    = 'e';
+    dsoggh.streamtype[4]    = 'o';
+    dsoggh.streamtype[5]    = ' ';
+    dsoggh.streamtype[6]    = ' ';
+    dsoggh.streamtype[7]    = ' ';
+    dsoggh.subtype[0]       = fourcc[0];
+    dsoggh.subtype[1]       = fourcc[1];
+    dsoggh.subtype[2]       = fourcc[2];
+    dsoggh.subtype[3]       = fourcc[3];
+    dsoggh.size             = sizeof (dsogg_header_t);
+    dsoggh.time_unit        = frame_duration * 1000 / 9;
+    dsoggh.samples_per_unit = 1;
+    dsoggh.default_len      = 0; /* ? */
+    dsoggh.buffersize       = 2048000;
+    dsoggh.bits_per_sample  = 0;
+    dsoggh.hubba.video.width      = width;
+    dsoggh.hubba.video.height     = height;
 
-  ogg_stream_packetin (&this->os_video, &opc);
+    *this->data = 0x01;
+    memcpy (this->data+1, &dsoggh, sizeof (dsogg_header_t));
+    
+    oph.packet     = this->data;
+    oph.bytes      = sizeof (dsogg_header_t) + 1;
+    oph.b_o_s      = 1;
+    oph.e_o_s      = 0;
+    oph.granulepos = 0;
+    oph.packetno   = this->video_cnt++;
+    
+    ogg_stream_packetin (&this->os_video, &oph);
+    
+    opc.packet     = "\003enix generated";
+    opc.bytes      = 15;
+    opc.b_o_s      = 0;
+    opc.e_o_s      = 0;
+    opc.granulepos = 0;
+    opc.packetno   = this->video_cnt++;
+    
+    ogg_stream_packetin (&this->os_video, &opc);
+  }
 
   while (1) {
     int result = ogg_stream_flush (&this->os_video, &this->og_video);
@@ -243,27 +256,41 @@ static void ogm_encode_video_frame (ogm_t *this, xine_video_frame_t *frame,
   this->video_encoder->encode_frame (this->video_encoder, frame, &keyframe);
 
   if (!hints_only) {
-    this->video_encoder->get_bitstream (this->video_encoder, this->data+1, &len);
 
-    op.packet      = this->data;
-    if (keyframe) {
-      this->data[0] = PACKET_IS_SYNCPOINT;
+    if (this->video_encoder->get_headers) {
+
+      this->video_encoder->get_bitstream (this->video_encoder, 
+					  this->data, &len);
+
+      op.packet      = this->data;
+      op.bytes       = len;
+
     } else {
-      this->data[0] = 0;
+
+      this->video_encoder->get_bitstream (this->video_encoder, 
+					  this->data+1, &len);
+
+      op.packet      = this->data;
+      if (keyframe) {
+	this->data[0] = PACKET_IS_SYNCPOINT;
+      } else {
+	this->data[0] = 0;
+      }
+      op.bytes       = len+1;
     }
-    op.bytes       = len+1;
+
     op.b_o_s       = 0;
     op.e_o_s       = 0;
     op.granulepos  = this->frame_num++;
     op.packetno    = this->video_cnt++;
-
+      
 #ifdef LOG
     printf ("mux_ogm: video granulepos %d\n", op.granulepos);
 #endif    
 
     /* weld the packet into the bitstream */
     ogg_stream_packetin (&this->os_video, &op);
-    
+
     /* write out pages (if any) */
     while (1){
       int result=ogg_stream_pageout (&this->os_video, &this->og_video);

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_xvid.c,v 1.1 2003/02/23 22:45:31 guenter Exp $
+ * $Id: vcodec_xvid.c,v 1.2 2003/04/18 00:52:55 guenter Exp $
  *
  * enix xvid video codec wrapper
  */
@@ -313,6 +313,7 @@ enix_venc_t *create_xvid_enc (void) {
 
   this->encoder.init           = xvid_init_encoder;
   this->encoder.set_pass       = xvid_set_pass;
+  this->encoder.get_headers    = NULL;
   this->encoder.encode_frame   = xvid_encode_frame;
   this->encoder.get_bitstream  = xvid_get_bitstream;
   this->encoder.flush          = xvid_flush;

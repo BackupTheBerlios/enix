@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: main.c,v 1.2 2003/04/13 18:18:42 guenter Exp $
+ * $Id: main.c,v 1.3 2003/04/18 00:52:55 guenter Exp $
  *
  * re-encoder main
  */
@@ -124,7 +124,8 @@ int main(int argc, char* argv[]) {
 
   printf ("generating foo.ogm...\n");
 
-  venc = create_ffmpeg_enc (FFMPEG_CODEC_ID_MPEG4);
+  /* venc = create_ffmpeg_enc (FFMPEG_CODEC_ID_MPEG4); */
+  venc = create_theora_enc ();
 
   /* venc = create_xvid_enc (); */
   venc->options->set_num_option (venc->options, "bitrate", bitrate_video);

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_ffmpeg.c,v 1.2 2003/04/13 18:18:42 guenter Exp $
+ * $Id: vcodec_ffmpeg.c,v 1.3 2003/04/18 00:52:55 guenter Exp $
  *
  * enix ffmpeg video codec wrapper
  */
@@ -214,6 +214,7 @@ enix_venc_t *create_ffmpeg_enc (int codec_id) {
 
   this->encoder.init           = ffmpeg_init_encoder;
   this->encoder.set_pass       = ffmpeg_set_pass;
+  this->encoder.get_headers    = NULL;
   this->encoder.encode_frame   = ffmpeg_encode_frame;
   this->encoder.get_bitstream  = ffmpeg_get_bitstream;
   this->encoder.flush          = ffmpeg_flush;

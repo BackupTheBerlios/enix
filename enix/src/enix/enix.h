@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: enix.h,v 1.2 2003/04/13 18:18:42 guenter Exp $
+ * $Id: enix.h,v 1.3 2003/04/18 00:52:55 guenter Exp $
  *
  * enix.h: toplevel, basic data structures and utility functions
  */
@@ -119,6 +119,9 @@ struct enix_venc_s {
   /* pass: 0 => single pass encoding, 1/2 => twopass encoding*/
   void (*set_pass) (enix_venc_t *this, int pass) ;
 
+  /* optional: codec provides it's own header packets */
+  int (*get_headers) (enix_venc_t *this, void **header);
+
   /* returns number of bytes written to outbuf */
   void (*encode_frame)  (enix_venc_t *this, xine_video_frame_t *frame,
 			 int *is_keyframe);
@@ -157,8 +160,9 @@ struct enix_aenc_s {
   enix_options_t *options;
 };
 
-#define ENIX_ENC_2PASS      1 /* encoder supports 2pass encoding */
-#define ENIX_ENC_IS_VORBIS  2 /* needs special treatment         */
+#define ENIX_ENC_2PASS       1 /* encoder supports 2pass encoding */
+#define ENIX_ENC_IS_VORBIS   2 /* needs special treatment         */
+#define ENIX_ENC_HAS_HEADERS 3 /* theora/vorbis provide header packets */
 
 #define ENIX_INFO_FOURCC    1
 #define ENIX_INFO_VORBISH_1 2
@@ -193,6 +197,7 @@ struct enix_mux_s {
 
 enix_venc_t *create_xvid_enc (void) ;
 enix_venc_t *create_ffmpeg_enc (int codec_id) ;
+enix_venc_t *create_theora_enc (void) ;
 enix_aenc_t *create_vorbis_enc (void) ;
 enix_aenc_t *create_speex_enc (void) ;
 enix_mux_t  *create_ogm_mux (void) ;
