@@ -187,7 +187,7 @@ dnl ---------------------------------------------
 dnl set include paths
 dnl ---------------------------------------------
 
-INCLUDES='-I$(top_srcdir) -I$(top_srcdir)/src/enix -I$(top_builddir)/src/enix -I$(top_srcdir)/src/enix/libavcodec -I$(top_builddir)/src/enix/libavcodec -I$(top_srcdir)/src/enix/libogg -I$(top_builddir)/src/enix/libogg -I$(top_srcdir)/src/enix/libspeex -I$(top_builddir)/src/enix/libspeex -I$(top_srcdir)/src/enix/libtheora -I$(top_builddir)/src/enix/libtheora'
+INCLUDES='-I$(top_srcdir) -I$(top_srcdir)/src/enix -I$(top_srcdir)/src/enix/libavcodec -I$(top_srcdir)/src/enix/libogg -I$(top_builddir)/src/enix/libvorbis -I$(top_srcdir)/src/enix/libspeex -I$(top_srcdir)/src/enix/libtheora'
 AC_SUBST(INCLUDES)
 
 
