@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: main.c,v 1.7 2004/07/28 13:53:15 dooh Exp $
+ * $Id: main.c,v 1.8 2004/07/29 20:09:01 dooh Exp $
  *
  * re-encoder main
  */
@@ -39,10 +39,12 @@ void print_usage (void) {
   printf ("  -h     show this info\n");
   printf ("  -A #   set audio bitrate [bits/sec]\n");
   printf ("  -V #   set video bitrate [bits/sec]\n");
+  printf ("  -q #   set videoquality instead of bitrate[0-63]\n");
   printf ("  -2     enable 2-pass encoding\n");
   printf ("  -b #   set number of b-frames\n");
   printf ("  -w #   set dest video width\n\n");
   printf ("  -v     increase verbosity\n\n");
+  printf ("  -s     square aspect ratio\n\n");
 }
 
 int main(int argc, char* argv[]) {
@@ -58,9 +60,11 @@ int main(int argc, char* argv[]) {
 
   int                 bitrate_audio;
   int                 bitrate_video;
+  int                 quality_video;
   int                 twopass;
   int                 bframes;
   int                 width;
+  int                 mode;
 
   /*
    * defaults
@@ -68,16 +72,18 @@ int main(int argc, char* argv[]) {
 
   bitrate_audio = 64000;
   bitrate_video = 150000;
+  quality_video = 32;
   twopass       = 0;
   bframes       = -1;
   width         = 0;
   verbosity     = 0;
+  mode          = ENIX_SCALER_MODE_AR_KEEP;
 
   /*
    * parse command line
    */
 
-  while ((opt = getopt(argc, argv, "hA:V:2b:w:v")) > 0) {
+  while ((opt = getopt(argc, argv, "hA:V:q:2sb:w:v")) > 0) {
     switch (opt) {
     case 'h':
       print_usage ();
@@ -97,7 +103,13 @@ int main(int argc, char* argv[]) {
       break;  
     case 'w':
       width = atoi (optarg);
-      break;  
+      break;
+    case 's':
+      mode=ENIX_SCALER_MODE_AR_SQUARE;
+      break;
+    case 'q':
+      quality_video = atoi (optarg);
+      break;
     case 'v':
       verbosity++;
       break;
@@ -122,7 +134,7 @@ int main(int argc, char* argv[]) {
   stream = enix_xine_stream_new (infile, 1, 1);
   if (width) {
     xine_stream=stream;
-    stream = enix_scaler_new (xine_stream, width, ENIX_SCALER_MODE_AR_KEEP, 16);
+    stream = enix_scaler_new (xine_stream, width, mode, 16);
   }
     
   /*
@@ -136,7 +148,7 @@ int main(int argc, char* argv[]) {
 
   /* venc = create_xvid_enc (); */
   venc->options->set_num_option (venc->options, "bitrate", bitrate_video);
-  venc->options->set_num_option (venc->options, "quality", 7);
+  venc->options->set_num_option (venc->options, "quality", quality_video);
   venc->options->set_num_option (venc->options, "max_bframes", bframes);
 
   aenc = create_vorbis_enc ();
