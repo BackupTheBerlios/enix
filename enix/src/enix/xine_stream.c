@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: xine_stream.c,v 1.3 2004/07/29 20:05:30 dooh Exp $
+ * $Id: xine_stream.c,v 1.4 2004/07/29 20:37:10 dooh Exp $
  *
  * wrapper around xine engine streams providing the enix_stream_t interface
  */
@@ -396,6 +396,11 @@ enix_stream_t *enix_xine_stream_new (char *mrl, int want_audio, int want_video) 
   this->zero_size = DEFAULT_ZERO_SIZE;
   this->zero_space = malloc (this->zero_size);
   memset (this->zero_space, 0, this->zero_size);
+
+  /* workaround
+     sometimes the properties like heigth,width and frame_duration are only set
+     when a play has occured*/     
+  enix_xine_play((enix_stream_t *)this,0,0);
 
   return (enix_stream_t *) this;
 }
