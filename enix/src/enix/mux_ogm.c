@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: mux_ogm.c,v 1.5 2003/07/13 15:29:00 guenter Exp $
+ * $Id: mux_ogm.c,v 1.6 2004/07/28 00:42:30 dooh Exp $
  *
  * enix ogm multiplexer
  */
@@ -151,12 +151,23 @@ static void ogm_init (enix_mux_t *this_gen, char *filename,
   video_encoder->init (video_encoder, stream);
 
   if (video_encoder->get_headers) {
-
+    int pagenumber=0;
     ogg_packet *op;
 
     while (video_encoder->get_headers (video_encoder, (void **) &op)) {
-
+      pagenumber++;
       ogg_stream_packetin (&this->os_video, op);
+
+      if (pagenumber==1) {
+        /*The initial packet must be writen alone*/
+        while (1) {
+          int result = ogg_stream_flush (&this->os_video, &this->og_video);
+          if (result==0)
+            break;
+          write (this->fh, this->og_video.header, this->og_video.header_len);
+          write (this->fh, this->og_video.body, this->og_video.body_len);
+        }      
+      }
 
     }
 
@@ -212,13 +223,6 @@ static void ogm_init (enix_mux_t *this_gen, char *filename,
     ogg_stream_packetin (&this->os_video, &opc);
   }
 
-  while (1) {
-    int result = ogg_stream_flush (&this->os_video, &this->og_video);
-    if (result==0)
-      break;
-    write (this->fh, this->og_video.header, this->og_video.header_len);
-    write (this->fh, this->og_video.body, this->og_video.body_len);
-  }
 
   /* audio */
 
@@ -244,6 +248,15 @@ static void ogm_init (enix_mux_t *this_gen, char *filename,
       break;
     write (this->fh, this->og_audio.header, this->og_audio.header_len);
     write (this->fh, this->og_audio.body, this->og_audio.body_len);
+  }
+
+  /*dump the remaining video headers*/
+  while (1) {
+    int result = ogg_stream_flush (&this->os_video, &this->og_video);
+    if (result==0)
+      break;
+    write (this->fh, this->og_video.header, this->og_video.header_len);
+    write (this->fh, this->og_video.body, this->og_video.body_len);
   }
 }
 
