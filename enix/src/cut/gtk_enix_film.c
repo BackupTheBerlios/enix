@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: gtk_enix_film.c,v 1.1 2003/02/23 22:56:18 guenter Exp $
+ * $Id: gtk_enix_film.c,v 1.2 2004/07/28 12:47:47 dooh Exp $
  *
  * gtk enix film stripe display widget
  */
@@ -162,7 +162,7 @@ GtkWidget *gtk_enix_film_get_widget (gtk_enix_film_t *this) {
 void gtk_enix_film_set_stream (gtk_enix_film_t *this,
 			       enix_stream_t *stream) {
 
-  this->stream = enix_scaler_new (stream, DEFAULT_WIDTH, 0);
+  this->stream = enix_scaler_new (stream, DEFAULT_WIDTH, ENIX_SCALER_MODE_AR_SQUARE, 1);
   this->seeker->upper = stream->get_property (stream, ENIX_STREAM_PROP_LENGTH);
   this->seeker->value = 0.0;
 

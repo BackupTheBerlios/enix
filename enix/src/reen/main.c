@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: main.c,v 1.5 2004/07/27 23:08:52 dooh Exp $
+ * $Id: main.c,v 1.6 2004/07/28 12:47:47 dooh Exp $
  *
  * re-encoder main
  */
@@ -33,9 +33,6 @@
 
 int verbosity; /* global var used by enix */
 
-#define DST_WIDTH  320
-#define CLIP         0
-
 void print_usage (void) {
   printf ("usage: enix_reen [ options ] inputfile\n\n");
   printf ("options:\n");
@@ -50,7 +47,7 @@ void print_usage (void) {
 
 int main(int argc, char* argv[]) {
 
-  enix_stream_t      *xine_stream;
+  enix_stream_t      *xine_stream, *stream;
   char               *infile;
   /* char                outfile[1024]; */
   enix_venc_t        *venc;
@@ -123,7 +120,7 @@ int main(int argc, char* argv[]) {
    */
 
   xine_stream   = enix_xine_stream_new (infile, 1, 1);
-  /*stream        = enix_scaler_new (xine_stream, width, CLIP);*/
+  stream        = enix_scaler_new (xine_stream, width, ENIX_SCALER_MODE_AR_KEEP, 16);
 
   /*
    * create an encoder
@@ -145,7 +142,7 @@ int main(int argc, char* argv[]) {
   mux = create_ogm_mux ();
   mux->options->set_num_option (mux->options, "2pass", twopass);
 
-  mux->init (mux, "foo.ogm", venc, aenc, xine_stream);
+  mux->init (mux, "foo.ogm", venc, aenc, stream);
 
   mux->run (mux);
 

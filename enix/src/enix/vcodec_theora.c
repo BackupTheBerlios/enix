@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_theora.c,v 1.4 2004/07/27 23:08:52 dooh Exp $
+ * $Id: vcodec_theora.c,v 1.5 2004/07/28 12:47:47 dooh Exp $
  *
  * enix theora video codec wrapper
  */
@@ -64,23 +64,32 @@ typedef struct {
 
 } theora_t;
 
+static int gcd(int m, int n) {
+  int rest;
+  while (n!=0) {
+    rest = m % n;
+    m = n;
+    n = rest;
+  }
+  return m;
+}
 
 static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   
   theora_t          *this = (theora_t *) this_gen;
-  int                width, height, frame_duration;
+  int                width, height, frame_duration,aspect;
   int                quality, bitrate, max_bframes;
   enix_options_t    *options;
+  int temp;
 
   width          = stream->get_property (stream, ENIX_STREAM_PROP_WIDTH);
   height         = stream->get_property (stream, ENIX_STREAM_PROP_HEIGHT);
   frame_duration = stream->get_property (stream, ENIX_STREAM_PROP_FRAME_DURATION);
+  aspect         = stream->get_property (stream, ENIX_STREAM_PROP_ASPECT);
   options        = this->encoder.options;
 
-#ifdef LOG
   printf ("vcodec_theora: width=%02d, height=%02d, bitrate=%d\n", 
 	  width, height, bitrate);
-#endif
 
   quality                   = options->get_num_option (options,
 						       "quality");
@@ -106,8 +115,10 @@ static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   this->ti.offset_y=0;
   this->ti.fps_numerator      = 90000;
   this->ti.fps_denominator    = frame_duration;
-  this->ti.aspect_numerator   = width;
-  this->ti.aspect_denominator = height;
+  printf (" ´%d´ * ´%d´ = ´%d´\n",aspect,height,aspect*height);
+  temp=gcd(aspect * height,10000 * width);
+  this->ti.aspect_numerator   = aspect * height / temp;
+  this->ti.aspect_denominator = 10000 * width / temp;
   this->ti.colorspace            = OC_CS_UNSPECIFIED;
   this->ti.target_bitrate     = bitrate;
   this->ti.target_bitrate     = -1;
