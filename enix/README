@@ -1,0 +1,25 @@
+
+enix: video stream processing framework
+
+(C) 2003 by Guenter Bartsch
+
+This is free software distributed under the GPL
+
+
+requirements
+------------
+
+GNU make
+
+xvid: 
+
+  download from www.xvid.org
+  $ cd xvidcore/build/generic
+  $ vi Makefile.linux 
+  $ make -f Makefile.linux
+
+ogg/vorbis:
+
+  download from www.xiph.org
+
+

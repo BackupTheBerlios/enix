@@ -1,0 +1,3 @@
+0.1.3
+	* scaler code (zoom.c/zoom.h) from transcode added
+	* libavcodec added

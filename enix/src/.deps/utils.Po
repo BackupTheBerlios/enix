@@ -1,0 +1,4 @@
+utils.o : \
+ utils.c ../config.h
+utils.c :
+../config.h :
