@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: enix.h,v 1.3 2003/04/18 00:52:55 guenter Exp $
+ * $Id: enix.h,v 1.4 2003/04/27 16:31:19 guenter Exp $
  *
  * enix.h: toplevel, basic data structures and utility functions
  */
@@ -163,6 +163,7 @@ struct enix_aenc_s {
 #define ENIX_ENC_2PASS       1 /* encoder supports 2pass encoding */
 #define ENIX_ENC_IS_VORBIS   2 /* needs special treatment         */
 #define ENIX_ENC_HAS_HEADERS 3 /* theora/vorbis provide header packets */
+#define ENIX_ENC_OGG_PACKETS 4 /* encoder provides data in ogg packets */
 
 #define ENIX_INFO_FOURCC    1
 #define ENIX_INFO_VORBISH_1 2

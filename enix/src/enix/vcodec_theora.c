@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_theora.c,v 1.1 2003/04/18 00:52:55 guenter Exp $
+ * $Id: vcodec_theora.c,v 1.2 2003/04/27 16:31:19 guenter Exp $
  *
  * enix theora video codec wrapper
  */
@@ -150,7 +150,9 @@ static void theora_encode_frame (enix_venc_t *this_gen, xine_video_frame_t *fram
   printf ("encoded frame %d x %d, ret=%d\n", frame->width, frame->height, ret);
 
   this->got_bits = 0;
+  theora_encode_packetout (&this->td, 0, &this->op);
 
+  printf ("vcodec_theora: granulepos %08x\n", this->op.granulepos);
 
 #if 0 /* FIXME */
 #ifdef LOG
@@ -186,22 +188,10 @@ static void theora_get_bitstream (enix_venc_t *this_gen, void *buf, int *num_byt
     return;
   }
 
-  theora_encode_packetout (&this->td, 0, &this->op);
   this->got_bits = 1;
 
-  *num_bytes = this->op.bytes;
-  memcpy (buf, this->op.packet, this->op.bytes);
-
-  printf ("%d bytes\n", this->op.bytes);
-
-
-#if 0
-  /* if there's only one frame, it's the last in the stream */
-  if(state<2)
-    theora_encode_packetout(td,1,&op);
-  else
-    theora_encode_packetout(td,0,&op);
-#endif
+  *num_bytes = sizeof (ogg_packet);
+  memcpy (buf, &this->op, sizeof (ogg_packet));
 }
 
 
@@ -230,7 +220,7 @@ static int theora_get_properties (enix_venc_t *this_gen) {
 
   /* theora_t *this = (theora_t *) this_gen; */
 
-  return 0; /* ENIX_ENC_2PASS; */
+  return ENIX_ENC_HAS_HEADERS | ENIX_ENC_OGG_PACKETS ;
 }
 
 static void *theora_get_extra_info (enix_venc_t *this_gen, int info) {

@@ -11,8 +11,8 @@ dnl
 AC_PREREQ(2.53)
 
 ENIX_MAJOR=0
-ENIX_MINOR=1
-ENIX_SUB=3
+ENIX_MINOR=2
+ENIX_SUB=0
 
 AC_SUBST(ENIX_MAJOR)
 AC_SUBST(ENIX_MINOR)
@@ -101,29 +101,6 @@ fi
 AC_HEADER_STAT
 AC_HEADER_DIRENT
 
-dnl ---------------------------------------------
-dnl Ogg/Vorbis libs.
-dnl ---------------------------------------------
-AM_PATH_OGG(
-           [ AM_PATH_VORBIS([], 
-	                    AC_MSG_ERROR("ogg/vorbis libraries (plus headers) are needed.)) 
-	   ], 
-	   AC_MSG_ERROR("ogg/vorbis libraries (plus headers) are needed.)) 
-
-
-dnl
-dnl includes
-dnl
-INCLUDES='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/src/enix -I$(top_builddir)/src/enix'
-AC_SUBST(INCLUDES)
-
-dnl ---------------------------------------------
-dnl speex lib/headers
-dnl ---------------------------------------------
-
-AC_CHECK_LIB(speex, speex_encoder_init, HAVE_SPEEX="maybe", AC_MSG_ERROR("speex libraries (plus headers) needed"), [-lm -logg])
-AC_CHECK_HEADER(speex.h, , AC_MSG_ERROR("(required) speex headers not found."))
-
 
 dnl ---------------------------------------------
 dnl CFLAGS
@@ -209,7 +186,7 @@ dnl ---------------------------------------------
 dnl set include paths
 dnl ---------------------------------------------
 
-INCLUDES='-I$(top_srcdir) -I$(top_srcdir)/src/enix -I$(top_builddir)/src/enix -I$(top_srcdir)/src/enix/libavcodec -I$(top_builddir)/src/enix/libavcodec'
+INCLUDES='-I$(top_srcdir) -I$(top_srcdir)/src/enix -I$(top_builddir)/src/enix -I$(top_srcdir)/src/enix/libavcodec -I$(top_builddir)/src/enix/libavcodec -I$(top_srcdir)/src/enix/libogg -I$(top_builddir)/src/enix/libogg -I$(top_srcdir)/src/enix/libspeex -I$(top_builddir)/src/enix/libspeex'
 AC_SUBST(INCLUDES)
 
 
@@ -221,6 +198,18 @@ src/enix/libavcodec/Makefile
 src/enix/libavcodec/armv4l/Makefile
 src/enix/libavcodec/alpha/Makefile
 src/enix/libavcodec/i386/Makefile
+src/enix/libavcodec/liba52/Makefile
+src/enix/libogg/Makefile
+src/enix/libogg/ogg/Makefile
+src/enix/libvorbis/Makefile
+src/enix/libvorbis/books/Makefile
+src/enix/libvorbis/books/coupled/Makefile
+src/enix/libvorbis/books/uncoupled/Makefile
+src/enix/libvorbis/books/floor/Makefile
+src/enix/libvorbis/modes/Makefile
+src/enix/libvorbis/vorbis/Makefile
+src/enix/libtheora/Makefile
+src/enix/libspeex/Makefile
 src/cut/Makefile
 src/reen/Makefile
 src/phone/Makefile

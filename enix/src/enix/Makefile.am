@@ -1,19 +1,23 @@
-SUBDIRS = libavcodec
+SUBDIRS = libavcodec libogg libvorbis libtheora libspeex
 
 AM_CFLAGS = $(XINE_CFLAGS)
 
 noinst_LTLIBRARIES = libenix.la
 
 libenix_la_SOURCES = scaler.c frame.c xine_stream.c options.c \
-	 	     vcodec_xvid.c acodec_vorbis.c mux_ogm.c zoom.c \
+	 	     acodec_vorbis.c mux_ogm.c zoom.c \
 		     vcodec_ffmpeg.c acodec_speex.c vcodec_theora.c
+
+#vcodec_xvid.c
 
 libenix_la_LDFLAGS = $(THREAD_LIBS) -avoid-version -module
 
-libenix_la_LIBADD   = @XINE_LIBS@ $(VORBIS_LIBS) $(VORBISENC_LIBS) \
-	  	      $(OGG_LIBS) -lxvidcore -lspeex -ltheora \
-		      $(top_builddir)/src/enix/libavcodec/libavcodec.la
-
+libenix_la_LIBADD   = @XINE_LIBS@ \
+		      $(top_builddir)/src/enix/libavcodec/libavcodec.la \
+		      $(top_builddir)/src/enix/libogg/libogg.la \
+		      $(top_builddir)/src/enix/libvorbis/libvorbis.la \
+		      $(top_builddir)/src/enix/libtheora/libtheora.la \
+		      $(top_builddir)/src/enix/libspeex/libspeex.la
 
 noinst_HEADERS = enix.h  scaler.h  xine_stream.h zoom.h
 

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: mux_ogm.c,v 1.3 2003/04/18 00:52:55 guenter Exp $
+ * $Id: mux_ogm.c,v 1.4 2003/04/27 16:31:19 guenter Exp $
  *
  * enix ogm multiplexer
  */
@@ -154,7 +154,7 @@ static void ogm_init (enix_mux_t *this_gen, char *filename,
 
     ogg_packet *op;
 
-    while (video_encoder->get_headers (video_encoder, &op)) {
+    while (video_encoder->get_headers (video_encoder, (void **) &op)) {
 
       ogg_stream_packetin (&this->os_video, op);
 
@@ -257,13 +257,13 @@ static void ogm_encode_video_frame (ogm_t *this, xine_video_frame_t *frame,
 
   if (!hints_only) {
 
-    if (this->video_encoder->get_headers) {
+    if (this->video_encoder->get_properties (this->video_encoder) & ENIX_ENC_OGG_PACKETS) {
 
       this->video_encoder->get_bitstream (this->video_encoder, 
-					  this->data, &len);
+					  &op, &len);
 
-      op.packet      = this->data;
-      op.bytes       = len;
+      this->frame_num++;
+      this->video_cnt++;
 
     } else {
 
@@ -277,12 +277,12 @@ static void ogm_encode_video_frame (ogm_t *this, xine_video_frame_t *frame,
 	this->data[0] = 0;
       }
       op.bytes       = len+1;
+      op.b_o_s       = 0;
+      op.e_o_s       = 0;
+      op.granulepos  = this->frame_num++;
+      op.packetno    = this->video_cnt++;
     }
 
-    op.b_o_s       = 0;
-    op.e_o_s       = 0;
-    op.granulepos  = this->frame_num++;
-    op.packetno    = this->video_cnt++;
       
 #ifdef LOG
     printf ("mux_ogm: video granulepos %d\n", op.granulepos);

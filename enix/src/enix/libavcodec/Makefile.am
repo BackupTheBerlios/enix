@@ -2,7 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 ##
 
-SUBDIRS = armv4l i386 alpha
+SUBDIRS = armv4l i386 alpha liba52
 
 ## we include ppc/* files since auto* doesn't dive into.
 EXTRA_DIST = fdctref.c imgresample.c \
