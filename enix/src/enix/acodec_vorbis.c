@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: acodec_vorbis.c,v 1.1 2003/02/23 22:45:38 guenter Exp $
+ * $Id: acodec_vorbis.c,v 1.2 2003/03/12 16:16:04 guenter Exp $
  *
  * enix vorbis audio codec wrapper
  */
@@ -86,13 +86,19 @@ static void vorbis_init_encoder (enix_aenc_t *this_gen, enix_stream_t *stream) {
 
   vorbis_info_init (&this->vi);
 
-  ret = vorbis_encode_init (&this->vi, channels, sample_rate,
-			    bitrate*2, bitrate, bitrate/2);
-  
+#if 0
+  vorbis_encode_init (&this->vi, channels, sample_rate,
+		      bitrate*2, bitrate, bitrate/2);
+#endif
+
+  ret = vorbis_encode_setup_vbr (&this->vi, channels, sample_rate, 1);
+
   if (ret) {
     printf ("oxv: help, vorbis_encode_init failed.\n");
     exit(1);
   }
+
+  vorbis_encode_setup_init (&this->vi);
 
   /* add a comment */
   vorbis_comment_init (&this->vc);

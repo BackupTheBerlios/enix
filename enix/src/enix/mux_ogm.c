@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: mux_ogm.c,v 1.1 2003/02/23 22:45:40 guenter Exp $
+ * $Id: mux_ogm.c,v 1.2 2003/03/12 16:16:04 guenter Exp $
  *
  * enix ogm multiplexer
  */
@@ -124,7 +124,7 @@ static void ogm_init (enix_mux_t *this_gen, char *filename,
   this->fh = open (filename, O_CREAT|O_TRUNC|O_WRONLY, 0644);
 
   if (this->fh<0) {
-    printf ("ogm: failed to create file '%s'\n", filename);
+    printf ("mux_ogm failed to create file '%s'\n", filename);
     abort ();
   }
 
@@ -155,7 +155,7 @@ static void ogm_init (enix_mux_t *this_gen, char *filename,
   width  = stream->get_property (stream, ENIX_STREAM_PROP_WIDTH);
   height = stream->get_property (stream, ENIX_STREAM_PROP_HEIGHT);
 
-  printf ("mux:ogm: frame_duration = %d\n", frame_duration);
+  printf ("mux:mux_ogm frame_duration = %d\n", frame_duration);
 
   dsoggh.streamtype[0]    = 'v';
   dsoggh.streamtype[1]    = 'i';
@@ -289,8 +289,8 @@ static void ogm_write_audio_bitstream (ogm_t *this) {
     op.packetno = this->audio_cnt++;
 
 #ifdef LOG
-    printf ("ogm: added audio package, %ld bytes\n", op.bytes);
-    printf ("ogm: granulepos %lld, packetno %lld, audio_cnt=%d\n",
+    printf ("mux_ogm: added audio package, %ld bytes\n", op.bytes);
+    printf ("mux_ogm: granulepos %lld, packetno %lld, audio_cnt=%d\n",
 	    op.granulepos, op.packetno, this->audio_cnt);
 #endif      
 
@@ -302,6 +302,7 @@ static void ogm_write_audio_bitstream (ogm_t *this) {
       int result=ogg_stream_pageout (&this->os_audio, &this->og_audio);
       if (result==0)
 	break;
+
       write (this->fh, this->og_audio.header, this->og_audio.header_len);
       write (this->fh, this->og_audio.body, this->og_audio.body_len);
     }
@@ -364,21 +365,19 @@ static void ogm_run (enix_mux_t *this_gen) {
     audio_pts = 0;
     video_pts = 0;
     cnt       = 0;
-    
+
     show_progress (0, length);
     
     while (1) {
       
 #ifdef LOG
-      printf ("ogm: audio_pts: %lld, video_pts: %lld\n", 
+      printf ("mux_ogm audio_pts: %lld, video_pts: %lld\n", 
 	      audio_pts, video_pts);
 #endif
       
       if (audio_pts<video_pts) {
 	
 	xine_audio_frame_t frame;
-	
-	/* printf ("get next audio frame...\n"); */
 	
 	if (!stream->get_next_audio_frame (stream, &frame)) 
 	  break;
@@ -393,15 +392,14 @@ static void ogm_run (enix_mux_t *this_gen) {
 	cnt ++;
 	
 #ifdef LOG
-	printf ("ogm: got audio frame pts %lld\n", frame.vpts);
+	printf ("mux_ogm got audio frame pts %lld\n", frame.vpts);
 #endif
 	if ( (passes==1) || (pass==1) )
 	  ogm_encode_audio_frame (this, &frame);
+
       } else {
 	
 	xine_video_frame_t frame;
-	
-	/* printf ("get next video frame...\n"); */
 	
 	if (!stream->get_next_video_frame (stream, &frame)) 
 	  break;
@@ -409,7 +407,7 @@ static void ogm_run (enix_mux_t *this_gen) {
 	video_pts = frame.vpts;
 	
 #ifdef LOG
-	printf ("ogm: got video frame %dx%d, pts %lld\n", 
+	printf ("mux_ogm got video frame %dx%d, pts %lld\n", 
 		frame.width, frame.height, frame.vpts);
 #endif
 	if ( (passes==1) || (pass==1) )
