@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: acodec_vorbis.c,v 1.3 2003/04/13 18:18:42 guenter Exp $
+ * $Id: acodec_vorbis.c,v 1.4 2004/08/01 23:50:16 dooh Exp $
  *
  * enix vorbis audio codec wrapper
  */
@@ -62,7 +62,7 @@ typedef struct {
 static void vorbis_init_encoder (enix_aenc_t *this_gen, enix_stream_t *stream) {
   
   vorbis_t          *this = (vorbis_t *) this_gen;
-  int                bitrate, channels, sample_rate;
+  int                quality, bitrate, channels, sample_rate;
   enix_options_t    *options;
   int                ret;
 
@@ -72,6 +72,8 @@ static void vorbis_init_encoder (enix_aenc_t *this_gen, enix_stream_t *stream) {
 
   options      = this->encoder.options;
   bitrate      = options->get_num_option (options, "bitrate");
+  quality      = options->get_num_option (options, "quality");
+
   channels     = stream->get_property (stream, ENIX_STREAM_PROP_AUDIO_CHANNELS);
   sample_rate  = stream->get_property (stream, ENIX_STREAM_PROP_SAMPLE_RATE);
 
@@ -89,10 +91,13 @@ static void vorbis_init_encoder (enix_aenc_t *this_gen, enix_stream_t *stream) {
 		      bitrate*2, bitrate, bitrate/2);
 #endif
 
-  ret = vorbis_encode_setup_vbr (&this->vi, channels, sample_rate, 1);
+  if (quality != -1)
+    ret = vorbis_encode_setup_vbr (&this->vi, channels, sample_rate, (float)quality / 64);
+  else
+    ret = vorbis_encode_setup_managed (&this->vi, channels, sample_rate, -1, bitrate*1000, -1);
 
   if (ret) {
-    printf ("oxv: help, vorbis_encode_init failed.\n");
+    printf ("oxv: help, vorbis_encode_init failed. retvalue is %d\n",ret);
     exit(1);
   }
 
@@ -106,10 +111,8 @@ static void vorbis_init_encoder (enix_aenc_t *this_gen, enix_stream_t *stream) {
   vorbis_analysis_init (&this->vd, &this->vi);
   vorbis_block_init (&this->vd, &this->vb);
 
-
   vorbis_analysis_headerout (&this->vd, &this->vc, &this->header, 
 			     &this->header_comm, &this->header_code);
-
 
   this->audio_cnt = 0;
 }
@@ -238,7 +241,8 @@ enix_aenc_t *create_vorbis_enc (void) {
   this->encoder.get_extra_info = vorbis_get_extra_info;
   this->encoder.options        = enix_create_options ();
 
-  this->encoder.options->new_num_option (this->encoder.options, "bitrate", 128000);
+  this->encoder.options->new_num_option (this->encoder.options, "bitrate", -1);
+  this->encoder.options->new_num_option (this->encoder.options, "quality", 16);
 
   return &this->encoder;
 }

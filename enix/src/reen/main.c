@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: main.c,v 1.10 2004/07/30 14:00:10 dooh Exp $
+ * $Id: main.c,v 1.11 2004/08/01 23:50:16 dooh Exp $
  *
  * re-encoder main
  */
@@ -38,8 +38,9 @@ void print_usage (void) {
   printf ("options:\n");
   printf ("  -h     show this info\n");
   printf ("  -A #   set audio bitrate [bits/sec]\n");
+  printf ("  -a #   set audio quality instead of bitrate[0-63]\n");
   printf ("  -V #   set video bitrate [bits/sec]\n");
-  printf ("  -q #   set videoquality instead of bitrate[0-63]\n");
+  printf ("  -q #   set video quality instead of bitrate[0-63]\n");
   printf ("  -2     enable 2-pass encoding\n");
   printf ("  -b #   set number of b-frames\n");
   printf ("  -w #   set dest video width\n\n");
@@ -59,6 +60,7 @@ int main(int argc, char* argv[]) {
   int                 opt;
 
   int                 bitrate_audio;
+  int                 quality_audio;
   int                 bitrate_video;
   int                 quality_video;
   int                 twopass;
@@ -70,7 +72,8 @@ int main(int argc, char* argv[]) {
    * defaults
    */
 
-  bitrate_audio = 64000;
+  bitrate_audio = -1;
+  quality_audio = 16;
   bitrate_video = 150000;
   quality_video = 32;
   twopass       = 0;
@@ -83,7 +86,7 @@ int main(int argc, char* argv[]) {
    * parse command line
    */
 
-  while ((opt = getopt(argc, argv, "hA:V:q:2sb:w:v")) > 0) {
+  while ((opt = getopt(argc, argv, "hA:a:V:q:2sb:w:v")) > 0) {
     switch (opt) {
     case 'h':
       print_usage ();
@@ -97,20 +100,25 @@ int main(int argc, char* argv[]) {
       break;
     case 'V':
       bitrate_video = atoi (optarg);
-      quality_video=0;
+      quality_video=-1;
       break;  
+    case 'q':
+      quality_video = atoi (optarg);
+      bitrate_video=-1;
+      break;
     case 'A':
       bitrate_audio = atoi (optarg);
+      quality_audio=-1;
       break;  
+    case 'a':
+      quality_audio = atoi (optarg);
+      bitrate_audio=-1;
+      break;
     case 'w':
       width = atoi (optarg);
       break;
     case 's':
       mode=ENIX_SCALER_MODE_AR_SQUARE;
-      break;
-    case 'q':
-      quality_video = atoi (optarg);
-      bitrate_video=0;
       break;
     case 'v':
       verbosity++;
@@ -145,16 +153,17 @@ int main(int argc, char* argv[]) {
 
   printf ("generating foo.ogm...\n");
 
-  /* venc = create_ffmpeg_enc (FFMPEG_CODEC_ID_MPEG4); */
-  venc = create_theora_enc ();
-
   /* venc = create_xvid_enc (); */
+  /* venc = create_ffmpeg_enc (FFMPEG_CODEC_ID_MPEG4); */
+
+  venc = create_theora_enc ();
   venc->options->set_num_option (venc->options, "bitrate", bitrate_video);
   venc->options->set_num_option (venc->options, "quality", quality_video);
   venc->options->set_num_option (venc->options, "max_bframes", bframes);
 
   aenc = create_vorbis_enc ();
   aenc->options->set_num_option (aenc->options, "bitrate", bitrate_audio);
+  aenc->options->set_num_option (aenc->options, "quality", quality_audio);
   
   mux = create_ogm_mux ();
   mux->options->set_num_option (mux->options, "2pass", twopass);
