@@ -5,13 +5,13 @@
  * GOVERNED BY A BSD-STYLE SOURCE LICENSE INCLUDED WITH THIS SOURCE *
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
- * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2002             *
+ * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2003                *
  * by the Xiph.Org Foundation http://www.xiph.org/                  *
  *                                                                  *
  ********************************************************************
 
-  function: 
-  last mod: $Id: huffman.h,v 1.1 2003/04/27 16:44:44 guenter Exp $
+  function:
+  last mod: $Id: huffman.h,v 1.2 2004/07/27 23:08:52 dooh Exp $
 
  ********************************************************************/
 
@@ -53,9 +53,9 @@
 #define DCT_ZRL_TOKEN           8
 
 #define ONE_TOKEN               9       /* Special tokens for -1,1,-2,2 */
-#define MINUS_ONE_TOKEN         10 
-#define TWO_TOKEN               11 
-#define MINUS_TWO_TOKEN         12 
+#define MINUS_ONE_TOKEN         10
+#define TWO_TOKEN               11
+#define MINUS_TWO_TOKEN         12
 
 #define LOW_VAL_TOKENS          (MINUS_TWO_TOKEN + 1)
 #define DCT_VAL_CATEGORY3       (LOW_VAL_TOKENS + 4)
@@ -70,6 +70,5 @@
 #define DCT_RUN_CATEGORY1C      (DCT_RUN_CATEGORY1B + 1)
 #define DCT_RUN_CATEGORY2       (DCT_RUN_CATEGORY1C + 1)
 
-/* 35 */
-#define MAX_ENTROPY_TOKENS      (DCT_RUN_CATEGORY2 + 2)  
-
+/* 32 */
+#define MAX_ENTROPY_TOKENS      (DCT_RUN_CATEGORY2 + 2)

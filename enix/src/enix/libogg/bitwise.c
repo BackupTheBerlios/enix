@@ -11,7 +11,7 @@
  ********************************************************************
 
   function: packing variable sized words into an octet stream
-  last mod: $Id: bitwise.c,v 1.1 2003/04/27 16:40:42 guenter Exp $
+  last mod: $Id: bitwise.c,v 1.2 2004/07/27 23:08:52 dooh Exp $
 
  ********************************************************************/
 
@@ -34,7 +34,7 @@ static unsigned long mask[]=
  0x3fffffff,0x7fffffff,0xffffffff };
 
 static unsigned int mask8B[]=
-{0x00,0x80,0xc0,0xe0,0xf0,0xf8,0xfc,0xfe0,0xff};
+{0x00,0x80,0xc0,0xe0,0xf0,0xf8,0xfc,0xfe,0xff};
 
 void oggpack_writeinit(oggpack_buffer *b){
   memset(b,0,sizeof(*b));
@@ -150,7 +150,8 @@ static void oggpack_writecopy_helper(oggpack_buffer *b,
 				     long bits,
 				     void (*w)(oggpack_buffer *,
 					       unsigned long,
-					       int)){
+					       int),
+				     int msb){
   unsigned char *ptr=(unsigned char *)source;
 
   long bytes=bits/8;
@@ -175,16 +176,20 @@ static void oggpack_writecopy_helper(oggpack_buffer *b,
     *b->ptr=0;
 
   }
-  if(bits)
-    w(b,(unsigned long)(ptr[bytes]),bits);    
+  if(bits){
+    if(msb)
+      w(b,(unsigned long)(ptr[bytes]>>(8-bits)),bits);    
+    else
+      w(b,(unsigned long)(ptr[bytes]),bits);    
+  }
 }
 
 void oggpack_writecopy(oggpack_buffer *b,void *source,long bits){
-  oggpack_writecopy_helper(b,source,bits,oggpack_write);
+  oggpack_writecopy_helper(b,source,bits,oggpack_write,0);
 }
 
 void oggpackB_writecopy(oggpack_buffer *b,void *source,long bits){
-  oggpack_writecopy_helper(b,source,bits,oggpackB_write);
+  oggpack_writecopy_helper(b,source,bits,oggpackB_write,1);
 }
 
 void oggpack_reset(oggpack_buffer *b){
@@ -267,7 +272,7 @@ long oggpackB_look(oggpack_buffer *b,int bits){
       }
     }
   }
-  return(ret>>m);
+  return ((ret&0xffffffff)>>(m>>1))>>((m+1)>>1);
 }
 
 long oggpack_look1(oggpack_buffer *b){
@@ -364,7 +369,7 @@ long oggpackB_read(oggpack_buffer *b,int bits){
       }
     }
   }
-  ret>>=m;
+  ret=((ret&0xffffffffUL)>>(m>>1))>>((m+1)>>1);
   
  overflow:
 

@@ -5,13 +5,13 @@
  * GOVERNED BY A BSD-STYLE SOURCE LICENSE INCLUDED WITH THIS SOURCE *
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
- * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2002             *
+ * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2003                *
  * by the Xiph.Org Foundation http://www.xiph.org/                  *
  *                                                                  *
  ********************************************************************
 
-  function: 
-  last mod: $Id: pp.h,v 1.1 2003/04/27 16:44:44 guenter Exp $
+  function:
+  last mod: $Id: pp.h,v 1.2 2004/07/27 23:08:52 dooh Exp $
 
  ********************************************************************/
 
@@ -20,7 +20,7 @@
 #define INTERNAL_BLOCK_WIDTH    8
 
 
-/* NEW Line search values. */ 
+/* NEW Line search values. */
 #define UP      0
 #define DOWN    1
 #define LEFT    2
@@ -28,22 +28,21 @@
 
 #define FIRST_ROW           0
 #define NOT_EDGE_ROW        1
-#define LAST_ROW            2      
+#define LAST_ROW            2
 
 #define YDIFF_CB_ROWS                   (INTERNAL_BLOCK_HEIGHT * 3)
 #define CHLOCALS_CB_ROWS                (INTERNAL_BLOCK_HEIGHT * 3)
 #define PMAP_CB_ROWS                    (INTERNAL_BLOCK_HEIGHT * 3)
 #define PSCORE_CB_ROWS                  (INTERNAL_BLOCK_HEIGHT * 4)
 
-// Status values in block coding map
+/* Status values in block coding map */
 #define CANDIDATE_BLOCK_LOW                     -2
 #define CANDIDATE_BLOCK                         -1
 #define BLOCK_NOT_CODED                         0
-#define BLOCK_CODED_BAR                         3       
-#define BLOCK_CODED_SGC                         4       
-#define BLOCK_CODED_LOW                         4       
-#define BLOCK_CODED                             5       
+#define BLOCK_CODED_BAR                         3
+#define BLOCK_CODED_SGC                         4
+#define BLOCK_CODED_LOW                         4
+#define BLOCK_CODED                             5
 
 #define MAX_PREV_FRAMES             16
-#define MAX_SEARCH_LINE_LEN                     7   
-
+#define MAX_SEARCH_LINE_LEN                     7

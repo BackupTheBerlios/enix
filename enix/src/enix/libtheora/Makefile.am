@@ -6,7 +6,7 @@ libtheora_la_SOURCES = encode.c \
 	idct.c reconstruct.c \
 	mcomp.c scan.c blockmap.c misc_common.c \
 	dct.c frarray.c pb.c dct_decode.c frinit.c pp.c dct_encode.c \
-	huffman.c toplevel.c decode.c huffman.h quant.c 
+	huffman.c toplevel.c decode.c huffman.h quant.c comment.c
 
 noinst_HEADERS = hufftables.h quant_lookup.h encoder_internal.h block_inline.h \
 		toplevel_lookup.h pp.h encoder_lookup.h 

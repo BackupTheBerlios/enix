@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
  *
- * $Id: vcodec_theora.c,v 1.3 2003/07/13 15:29:00 guenter Exp $
+ * $Id: vcodec_theora.c,v 1.4 2004/07/27 23:08:52 dooh Exp $
  *
  * enix theora video codec wrapper
  */
@@ -52,6 +52,7 @@ typedef struct {
 
   theora_state       td;
   theora_info        ti;
+  theora_comment     tc;
 
   ogg_packet         header;
   int                header_cnt;
@@ -99,10 +100,15 @@ static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
 
   this->ti.width              = width;
   this->ti.height             = height;
+  this->ti.frame_width              = width;
+  this->ti.frame_height             = height;
+  this->ti.offset_x=0;
+  this->ti.offset_y=0;
   this->ti.fps_numerator      = 90000;
   this->ti.fps_denominator    = frame_duration;
-  this->ti.aspect_numerator   = width/height * 1000;
-  this->ti.aspect_denominator = 1000;
+  this->ti.aspect_numerator   = width;
+  this->ti.aspect_denominator = height;
+  this->ti.colorspace            = OC_CS_UNSPECIFIED;
   this->ti.target_bitrate     = bitrate;
   this->ti.target_bitrate     = -1;
   this->ti.quality            = quality;
@@ -113,15 +119,14 @@ static void theora_init_encoder (enix_venc_t *this_gen, enix_stream_t *stream) {
   this->ti.keyframe_auto_p              = 1;
   this->ti.keyframe_frequency           = 64;
   this->ti.keyframe_frequency_force     = 64;
-  /* this->ti.keyframe_data_target_bitrate = bitrate*1.5; */
-  this->ti.keyframe_data_target_bitrate = -1;
+  this->ti.keyframe_data_target_bitrate = bitrate*1.5;
+  /*this->ti.keyframe_data_target_bitrate = -1;*/
   this->ti.keyframe_auto_threshold      = 80;
   this->ti.keyframe_mindistance         = 8;
   this->ti.noise_sensitivity            = 1;
 
   theora_encode_init (&this->td, &this->ti);
 
-  theora_encode_header (&this->td, &this->header);
   this->header_cnt = 0;
 
 }
@@ -175,11 +180,22 @@ static int theora_get_headers (enix_venc_t *this_gen, void **header) {
 
   theora_t         *this = (theora_t *) this_gen;
 
-  if (this->header_cnt)
+  if (this->header_cnt==0) {
+    this->header_cnt=1;
+    *header = &this->header;
+    theora_encode_header (&this->td, &this->header);
+  } else if (this->header_cnt==1) {
+    this->header_cnt=2;
+    *header = &this->header;
+    theora_comment_init(&this->tc);
+    theora_encode_comment(&this->tc,&this->header);
+  } else if (this->header_cnt==2) {
+    this->header_cnt=3;
+    *header = &this->header;
+    theora_encode_tables(&this->td,&this->header);
+  } else if (this->header_cnt==3) {
     return 0;
-  this->header_cnt++;
-
-  *header = &this->header;
+  }
   return 1;
 }
 

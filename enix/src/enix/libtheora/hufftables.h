@@ -5,31 +5,32 @@
  * GOVERNED BY A BSD-STYLE SOURCE LICENSE INCLUDED WITH THIS SOURCE *
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
- * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2002             *
+ * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2003                *
  * by the Xiph.Org Foundation http://www.xiph.org/                  *
  *                                                                  *
  ********************************************************************
 
-  function: 
-  last mod: $Id: hufftables.h,v 1.1 2003/04/27 16:44:44 guenter Exp $
+  function:
+  last mod: $Id: hufftables.h,v 1.2 2004/07/27 23:08:52 dooh Exp $
 
  ********************************************************************/
 
 #include "huffman.h"
+#include "encoder_internal.h"
 
-unsigned char ExtraBitLengths_VP31[MAX_ENTROPY_TOKENS] = { 
-  0, 0, 0, 2, 3, 4, 12,3, 6,                 // EOB and Zero-run tokens. 
-  0, 0, 0, 0,                                // Very low value tokens. 
-  1, 1, 1, 1, 2, 3, 4, 5, 6, 10,             // Other value tokens 
-  1, 1, 1, 1, 1, 3, 4,                       // Category 1 runs. 
-  2, 3,                                      // Category 2 runs. 
+const unsigned char ExtraBitLengths_VP31[MAX_ENTROPY_TOKENS] = {
+  0, 0, 0, 2, 3, 4, 12,3, 6,                 /* EOB and Zero-run tokens. */
+  0, 0, 0, 0,                                /* Very low value tokens. */
+  1, 1, 1, 1, 2, 3, 4, 5, 6, 10,             /* Other value tokens */
+  1, 1, 1, 1, 1, 3, 4,                       /* Category 1 runs. */
+  2, 3,                                      /* Category 2 runs. */
 };
 
-#define NEW_FREQS 0 /// dbm - test new frequency tables
+#define NEW_FREQS 0 /* dbm - test new frequency tables */
 
 #if NEW_FREQS
 /* New baseline frequency tables for encoder version >= 2 */
-ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
+const ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
   /* DC Intra bias  */
   {  272,    84,    31,    36,    10,    2,    1,    92,    1,
      701,   872,   410,   478,
@@ -79,7 +80,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      159,   121,    17,    6,    16,    6,    2,
      69,    53,
   },
-  
+
   /* DC Inter Bias */
   {  534,   174,    71,    68,    10,    1,    1,    68,   119,
      1674,  1526,   560,   536,
@@ -129,7 +130,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      285,   223,   101,    66,   104,   120,    74,
      35,    22,
   },
-  
+
   /* AC INTRA Tables  */
   /* AC Intra bias group 1 tables */
   {  245,    68,    25,    28,    5,    1,    1,   359,    4,
@@ -229,7 +230,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      1222,   551,   462,   391,   220,   322,   156,
      290,   136,
   },
-  
+
   /* AC Intra bias group 2 tables */
   {  245,    49,    15,    11,    1,    1,    1,   332,    38,
      1163,  1162,   685,   683,
@@ -328,7 +329,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      930,   475,   345,   249,   236,  1124,   376,
      91,    56,
   },
-  
+
   /* AC Intra bias group 3 tables */
   {  278,    55,    17,    12,    1,    1,    1,   288,    71,
      1315,  1304,   725,   724,
@@ -427,7 +428,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      248,   131,   149,   272,   165,   535,   813,
      3,    3,
   },
-  
+
   /* AC Intra bias group 4 tables */
   {  599,   150,    55,    50,    9,    1,    1,   181,    19,
      1487,  1487,   625,   625,
@@ -530,7 +531,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
 
 #else /* Frequency tables for encoder version < 2 */
 
-ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
+const ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
   /* DC Intra bias */
   {  198,    62,    22,    31,    14,     6,     6,   205,     3,
      843,   843,   415,   516,
@@ -580,7 +581,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      139,   109,    9,    6,   20,    2,    1,
      94,   50,
   },
-  
+
   /* DC Inter Bias */
   {  490,   154,   57,   53,   10,    2,    1,   238,   160,
      1391,  1390,   579,   578,
@@ -630,7 +631,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      120,   97,   55,   39,   60,   38,   15,
      11,    8,
   },
-  
+
   /* AC INTRA Tables  */
   /* AC Intra bias group 1 tables */
   {  242,   62,   22,   20,    4,    1,    1,   438,    1,
@@ -730,7 +731,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      1187,   527,   498,   409,   147,   210,   56,
      263,   117,
   },
-  
+
   /* AC Intra bias group 2 tables */
   {  311,   74,   27,   27,    5,    1,    1,   470,   24,
      665,   667,   637,   638,
@@ -829,7 +830,7 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      914,   370,   235,   138,   145,   949,   128,
      94,   41,
   },
-  
+
   /* AC Intra bias group 3 tables */
   {  486,   112,   39,   34,    6,    1,    1,   541,   67,
      819,   818,   762,   763,
@@ -928,8 +929,8 @@ ogg_uint32_t FrequencyCounts_VP3[NUM_HUFF_TABLES][MAX_ENTROPY_TOKENS] = {
      18,   18,    9,   55,   36,   184,   323,
      1,    1,
   },
-  
-  
+
+
   /* AC Intra bias group 4 tables */
   {  921,   264,   101,   100,   19,    2,    1,   331,   98,
      1015,  1016,   799,   799,
