@@ -212,7 +212,6 @@ src/enix/libtheora/Makefile
 src/enix/libspeex/Makefile
 src/cut/Makefile
 src/reen/Makefile
-src/phone/Makefile
 m4/Makefile
 ])
 
