@@ -1,3 +1,5 @@
+SUBDIRS = theora
+
 noinst_LTLIBRARIES = libtheora.la
 
 libtheora_la_SOURCES = encode.c \

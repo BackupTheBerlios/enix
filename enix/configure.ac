@@ -186,7 +186,7 @@ dnl ---------------------------------------------
 dnl set include paths
 dnl ---------------------------------------------
 
-INCLUDES='-I$(top_srcdir) -I$(top_srcdir)/src/enix -I$(top_builddir)/src/enix -I$(top_srcdir)/src/enix/libavcodec -I$(top_builddir)/src/enix/libavcodec -I$(top_srcdir)/src/enix/libogg -I$(top_builddir)/src/enix/libogg -I$(top_srcdir)/src/enix/libspeex -I$(top_builddir)/src/enix/libspeex'
+INCLUDES='-I$(top_srcdir) -I$(top_srcdir)/src/enix -I$(top_builddir)/src/enix -I$(top_srcdir)/src/enix/libavcodec -I$(top_builddir)/src/enix/libavcodec -I$(top_srcdir)/src/enix/libogg -I$(top_builddir)/src/enix/libogg -I$(top_srcdir)/src/enix/libspeex -I$(top_builddir)/src/enix/libspeex -I$(top_srcdir)/src/enix/libtheora -I$(top_builddir)/src/enix/libtheora'
 AC_SUBST(INCLUDES)
 
 
@@ -209,6 +209,7 @@ src/enix/libvorbis/books/floor/Makefile
 src/enix/libvorbis/modes/Makefile
 src/enix/libvorbis/vorbis/Makefile
 src/enix/libtheora/Makefile
+src/enix/libtheora/theora/Makefile
 src/enix/libspeex/Makefile
 src/cut/Makefile
 src/reen/Makefile
